@@ -1,0 +1,51 @@
+/*
+  Design tokens for Sahaay. Colors are drawn from the logo (navy ring/text,
+  warm orange hands, sage-green leaves) so the site and the brand mark read
+  as one system. Change values here to re-skin the whole app.
+*/
+:root {
+  /* Neutrals */
+  --color-bg: #faf8f4;
+  --color-surface: #ffffff;
+  --color-neutral-100: #f1efe9;
+  --color-neutral-200: #e6e2d8;
+  --color-neutral-400: #c7c1b3;
+  --color-neutral-600: #7d7666;
+  --color-neutral-700: #5c564a;
+  --color-neutral-800: #3a362e;
+  --color-text: #23211c;
+
+  /* Navy — headings, nav, primary structural color */
+  --color-navy-900: #16324a;
+  --color-navy-800: #1c3e5c;
+  --color-navy-700: #234c70;
+  --color-navy-500: #3d6f96;
+  --color-navy-100: #e4edf3;
+
+  /* Orange — primary call-to-action accent (from the logo's hands) */
+  --color-accent: #e2884f;
+  --color-accent-600: #d1743a;
+  --color-accent-700: #b7602c;
+  --color-accent-100: #fbe9db;
+
+  /* Sage green — secondary accent (from the logo's leaves) */
+  --color-sage: #82a06c;
+  --color-sage-600: #6c8a58;
+  --color-sage-100: #e9f0e2;
+
+  --font-heading: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 2px 8px rgba(22, 50, 74, 0.06);
+  --shadow-md: 0 8px 24px rgba(22, 50, 74, 0.1);
+  --shadow-lg: 0 20px 48px rgba(22, 50, 74, 0.16);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.18s var(--ease-out);
+  --transition-base: 0.32s var(--ease-out);
+}

@@ -1,0 +1,13 @@
+.dashboard-note { font-size: 13px; color: var(--color-neutral-600); margin: 0 0 24px; }
+.staff-overview {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+@media (max-width: 960px) {
+  .staff-overview { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 600px) {
+  .staff-overview { grid-template-columns: repeat(2, 1fr); }
+}

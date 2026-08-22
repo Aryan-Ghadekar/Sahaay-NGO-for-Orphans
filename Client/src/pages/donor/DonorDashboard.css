@@ -1,0 +1,18 @@
+.donor-dashboard { padding: 48px 40px 80px; }
+.donor-dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin: 28px 0 44px;
+}
+.donor-dashboard__heading { font-size: 20px; margin: 0 0 14px; }
+.donor-dashboard__table { margin-bottom: 44px; }
+.donor-dashboard__note {
+  max-width: 640px;
+  background: var(--color-sage-100);
+  border: none;
+}
+@media (max-width: 860px) {
+  .donor-dashboard { padding: 36px 20px 60px; }
+  .donor-dashboard__stats { grid-template-columns: 1fr 1fr; }
+}

@@ -1,0 +1,84 @@
+.admin-header { margin-bottom: 28px; }
+.dashboard-subtitle {
+  color: var(--color-neutral-700);
+  max-width: 640px;
+  margin: 8px 0 0;
+  line-height: 1.55;
+}
+
+.admin-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.admin-stat {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.admin-stat__icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-stat__icon--accent { background: var(--color-accent-100); color: var(--color-accent-700); }
+.admin-stat__icon--sage { background: var(--color-sage-100); color: var(--color-sage-600); }
+.admin-stat__icon--navy { background: var(--color-navy-100); color: var(--color-navy-700); }
+.admin-stat__value {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-navy-900);
+  font-variant-numeric: tabular-nums;
+}
+.admin-stat__label { font-size: 12.5px; color: var(--color-neutral-700); }
+
+.admin-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+.admin-panel { display: flex; flex-direction: column; gap: 18px; }
+.admin-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+.admin-panel__header h3 { font-size: 17px; margin: 0; }
+.admin-panel__icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-panel__icon--navy { background: var(--color-navy-100); color: var(--color-navy-700); }
+.admin-panel__icon--accent { background: var(--color-accent-100); color: var(--color-accent-700); }
+
+.admin-content-list { display: flex; flex-direction: column; gap: 10px; }
+.admin-content-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--color-neutral-100);
+  font-size: 14px;
+  font-weight: 500;
+}
+.admin-content-row:last-child { border-bottom: none; }
+.admin-form { display: flex; flex-direction: column; gap: 12px; }
+
+@media (max-width: 960px) {
+  .admin-columns { grid-template-columns: 1fr; }
+}

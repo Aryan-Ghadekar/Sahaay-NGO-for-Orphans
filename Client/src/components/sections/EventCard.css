@@ -1,0 +1,16 @@
+.event-card { padding: 0; overflow: hidden; }
+.event-card__media { height: 180px; }
+.event-card__body { padding: 20px; }
+.event-card__title { font-size: 19px; margin: 12px 0 6px; }
+.event-card__desc {
+  color: var(--color-neutral-700);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+.event-card__meta {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  margin: 0 0 6px;
+}
+.event-card__body .btn { margin-top: 10px; }

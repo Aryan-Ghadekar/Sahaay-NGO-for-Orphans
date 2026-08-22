@@ -1,0 +1,12 @@
+.programs { padding: 88px 40px; background: var(--color-surface); }
+.programs__heading { font-size: 30px; margin: 0 0 28px; }
+.programs__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+}
+@media (max-width: 860px) {
+  .programs { padding: 56px 20px; }
+  .programs__grid { grid-template-columns: 1fr; }
+}

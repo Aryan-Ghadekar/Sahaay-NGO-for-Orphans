@@ -1,0 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap');
+@import './theme.css';
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--color-navy-900);
+}
+
+p { margin: 0; text-wrap: pretty; }
+
+a { color: var(--color-navy-700); text-decoration: none; }
+a:hover { color: var(--color-accent-700); }
+
+img { max-width: 100%; display: block; }
+
+button { font-family: inherit; }
+
+/* No padding here on purpose: every section that combines this with its own
+   class (.hero, .about, .impact, …) already sets its own full padding
+   (horizontal AND vertical) — a shorthand `padding` here would win the
+   cascade on declaration order and silently zero out their vertical
+   spacing. Anything that pairs .container with a class that has no padding
+   of its own (see Footer) must set its own horizontal inset explicitly. */
+.container {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-pill);
+  border: none;
+  font-weight: 600;
+  font-size: 14.5px;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-600) 100%);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(226, 136, 79, 0.35);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(226, 136, 79, 0.45);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-navy-800);
+  border: 1.5px solid var(--color-neutral-200);
+}
+.btn-secondary:hover {
+  border-color: var(--color-navy-500);
+  color: var(--color-navy-800);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-navy-800);
+  padding: 8px 14px;
+}
+.btn-ghost:hover { background: var(--color-navy-100); }
+
+.btn-block { width: 100%; }
+.btn-sm { padding: 7px 14px; font-size: 13px; }
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-kicker {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-accent-700);
+  margin: 0 0 6px;
+}
+.card-title { font-family: var(--font-heading); font-size: 17px; margin: 0 0 4px; color: var(--color-navy-900); }
+.card-body { color: var(--color-neutral-700); font-size: 14px; line-height: 1.5; }
+
+/* ---------- Tags ---------- */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tag-accent { background: var(--color-accent-100); color: var(--color-accent-700); }
+.tag-sage { background: var(--color-sage-100); color: var(--color-sage-600); }
+.tag-outline { background: transparent; color: var(--color-neutral-700); border: 1px solid var(--color-neutral-400); }
+.tag-neutral { background: var(--color-neutral-100); color: var(--color-neutral-700); }
+
+/* ---------- Form fields ---------- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-neutral-700);
+}
+.input {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--color-neutral-200);
+  background: var(--color-surface);
+  color: var(--color-text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--color-navy-500);
+  box-shadow: 0 0 0 3px var(--color-navy-100);
+}
+.input:read-only { background: var(--color-neutral-100); color: var(--color-neutral-700); }
+
+/* ---------- Tables ---------- */
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-neutral-200);
+  font-size: 13.5px;
+}
+.table th { color: var(--color-neutral-600); font-weight: 600; text-transform: uppercase; font-size: 11.5px; letter-spacing: 0.04em; }
+.table tr { transition: background var(--transition-fast); }
+.table tbody tr:hover { background: var(--color-neutral-100); }
+
+/* ---------- Scroll reveal ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 0 0 rgba(226, 136, 79, 0.55); }
+  70% { box-shadow: 0 0 0 26px rgba(226, 136, 79, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(226, 136, 79, 0); }
+}
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

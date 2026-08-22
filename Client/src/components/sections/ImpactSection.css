@@ -1,0 +1,18 @@
+.impact { padding: 88px 40px; }
+.impact__lead {
+  color: var(--color-neutral-700);
+  max-width: 600px;
+  margin: 0 0 32px;
+}
+.impact__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 860px) {
+  .impact { padding: 56px 20px; }
+  .impact__grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .impact__grid { grid-template-columns: 1fr; }
+}

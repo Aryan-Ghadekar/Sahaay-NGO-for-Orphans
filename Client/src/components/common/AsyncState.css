@@ -1,0 +1,24 @@
+.async-loader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 40px 0;
+  color: var(--color-neutral-600);
+  font-size: 14px;
+}
+.async-loader__spinner {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid var(--color-neutral-200);
+  border-top-color: var(--color-accent);
+  animation: spinSlow 0.8s linear infinite;
+}
+.async-error {
+  padding: 30px 0;
+  color: var(--color-accent-700);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}

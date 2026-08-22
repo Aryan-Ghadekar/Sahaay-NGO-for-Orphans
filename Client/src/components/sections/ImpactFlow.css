@@ -1,0 +1,29 @@
+.impact-flow {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+}
+.impact-flow__node {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  max-width: 460px;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.impact-flow__node:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+.impact-flow__node--highlight {
+  background: var(--color-accent-100);
+}
+.impact-flow__arrow {
+  margin: 2px 0 2px 30px;
+  color: var(--color-accent);
+  font-size: 20px;
+  animation: floatY 2.4s ease-in-out infinite;
+}

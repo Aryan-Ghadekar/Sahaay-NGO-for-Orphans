@@ -1,0 +1,39 @@
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 48px;
+  padding: 72px 40px 80px;
+  align-items: center;
+}
+.hero__title {
+  font-size: 52px;
+  line-height: 1.12;
+  margin: 0 0 20px;
+  animation: fadeInUp 0.8s var(--ease-out) both;
+}
+.hero__accent {
+  color: var(--color-accent-700);
+  background: linear-gradient(120deg, var(--color-accent-100) 0%, transparent 100%);
+}
+.hero__subtitle {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+  max-width: 520px;
+  margin: 0 0 28px;
+  animation: fadeInUp 0.8s var(--ease-out) 0.1s both;
+}
+.hero__actions {
+  display: flex;
+  gap: 14px;
+  animation: fadeInUp 0.8s var(--ease-out) 0.2s both;
+}
+.hero__media {
+  aspect-ratio: 4 / 3.2;
+  animation: fadeInUp 0.9s var(--ease-out) 0.15s both, floatY 6s ease-in-out 1s infinite;
+}
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; padding: 48px 20px; }
+  .hero__title { font-size: 36px; }
+}
