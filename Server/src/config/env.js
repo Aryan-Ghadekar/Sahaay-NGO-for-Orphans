@@ -1,0 +1,20 @@
+import 'dotenv/config';
+
+function required(name) {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(
+      `Missing required env var: ${name}. Copy Server/.env.example to Server/.env and fill it in.`
+    );
+  }
+  return value;
+}
+
+export const env = {
+  port: Number(process.env.PORT) || 4000,
+  clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
+  supabaseUrl: required('SUPABASE_URL'),
+  supabaseAnonKey: required('SUPABASE_ANON_KEY'),
+  supabaseServiceRoleKey: required('SUPABASE_SERVICE_ROLE_KEY'),
+  orgFoundedYear: Number(process.env.ORG_FOUNDED_YEAR) || 2014,
+};
