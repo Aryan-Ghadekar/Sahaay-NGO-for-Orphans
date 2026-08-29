@@ -17,4 +17,7 @@ export const env = {
   supabaseAnonKey: required('SUPABASE_ANON_KEY'),
   supabaseServiceRoleKey: required('SUPABASE_SERVICE_ROLE_KEY'),
   orgFoundedYear: Number(process.env.ORG_FOUNDED_YEAR) || 2014,
+  // Optional — the AI impact-narrative endpoint checks this itself and
+  // returns a clear error rather than failing at startup when it's unset.
+  geminiApiKey: process.env.GEMINI_API_KEY || '',
 };

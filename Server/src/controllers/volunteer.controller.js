@@ -1,8 +1,9 @@
 import * as volunteersService from '../services/volunteers.service.js';
 import * as eventsService from '../services/events.service.js';
 import * as applicationsService from '../services/applications.service.js';
+import * as attendanceService from '../services/attendance.service.js';
 import { scoreMatch, pickRecommendedEvent } from '../utils/matching.js';
-import { formatApplicationStatus, formatDayMonthYear } from '../utils/format.js';
+import { formatApplicationStatus, formatDayMonthYear, formatMonthYear } from '../utils/format.js';
 
 export async function getProfile(req, res) {
   const [volunteer, stats] = await Promise.all([
@@ -15,6 +16,7 @@ export async function getProfile(req, res) {
     skills: volunteer.skills || [],
     availability: volunteer.availability || 'Flexible',
     qualification: volunteer.qualification || '',
+    location: volunteer.location || '',
     stats: [
       { value: stats.total_events, label: 'Total Events' },
       { value: stats.events_attended, label: 'Events Attended' },
@@ -22,6 +24,57 @@ export async function getProfile(req, res) {
       { value: stats.volunteer_hours, label: 'Volunteer Hours' },
     ],
   });
+}
+
+export async function updateProfile(req, res) {
+  const { skills, qualification, availability, location } = req.body;
+  const parsedSkills = Array.isArray(skills)
+    ? skills
+    : String(skills || '').split(',').map((s) => s.trim()).filter(Boolean);
+  const volunteer = await volunteersService.updateVolunteerProfile(req.user.id, {
+    skills: parsedSkills,
+    qualification,
+    availability,
+    location,
+  });
+  res.json(volunteer);
+}
+
+// Every upcoming event, with this volunteer's match score and whether
+// they've already applied — the "Available Events" browsing page (the
+// dashboard's "Recommended" widget only ever shows the single best one).
+export async function getAvailableEvents(req, res) {
+  const [volunteer, upcoming, appliedEventIds] = await Promise.all([
+    volunteersService.getVolunteerWithProfile(req.user.id),
+    eventsService.listEventsByStatus('upcoming'),
+    applicationsService.listAppliedEventIds(req.user.id),
+  ]);
+
+  res.json(
+    upcoming.map((event) => ({
+      id: event.id,
+      title: event.title,
+      program: event.programs?.name || '—',
+      location: event.location || '—',
+      date: event.event_date ? formatMonthYear(event.event_date) : '—',
+      volunteersNeeded: event.volunteers_needed,
+      match: `${scoreMatch(volunteer, event)}%`,
+      applied: appliedEventIds.has(event.id),
+    }))
+  );
+}
+
+export async function getAttendance(req, res) {
+  const rows = await attendanceService.listAttendanceForVolunteer(req.user.id);
+  res.json(
+    rows.map((r) => ({
+      id: r.id,
+      event: r.events?.title || '—',
+      date: formatMonthYear(r.recorded_at),
+      attended: r.attended,
+      hours: r.hours,
+    }))
+  );
 }
 
 export async function getRecommended(req, res) {

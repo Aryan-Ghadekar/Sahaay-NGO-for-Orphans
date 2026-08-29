@@ -8,6 +8,9 @@ export const volunteerRoutes = Router();
 volunteerRoutes.use(authenticate, requireRole('volunteer'));
 
 volunteerRoutes.get('/profile', asyncHandler(volunteerController.getProfile));
+volunteerRoutes.patch('/profile', asyncHandler(volunteerController.updateProfile));
 volunteerRoutes.get('/recommended', asyncHandler(volunteerController.getRecommended));
+volunteerRoutes.get('/events', asyncHandler(volunteerController.getAvailableEvents));
 volunteerRoutes.get('/applications', asyncHandler(volunteerController.getApplications));
 volunteerRoutes.post('/applications', asyncHandler(volunteerController.apply));
+volunteerRoutes.get('/attendance', asyncHandler(volunteerController.getAttendance));

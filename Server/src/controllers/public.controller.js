@@ -1,6 +1,7 @@
 import * as publicStats from '../services/publicStats.service.js';
 import * as eventsService from '../services/events.service.js';
 import * as programsService from '../services/programs.service.js';
+import * as siteContentService from '../services/siteContent.service.js';
 import { env } from '../config/env.js';
 import { formatEventStatus } from '../utils/format.js';
 
@@ -33,7 +34,20 @@ function mapEvent(row) {
     description: row.description,
     meta: parts.join(' · '),
     impact: row.expected_impact ? `Expected Impact: ${row.expected_impact}` : undefined,
+    category: row.programs?.category,
+    image: row.image_data_url || null,
   };
+}
+
+// Hero/Volunteer CTA images an admin has replaced — the frontend falls
+// back to its bundled default photo for any key that comes back null.
+export async function getSiteImages(req, res) {
+  const rows = await siteContentService.listSiteImages();
+  const byKey = Object.fromEntries(rows.map((r) => [r.key, r.image_data_url]));
+  res.json({
+    hero_image: byKey.hero_image || null,
+    volunteer_cta_image: byKey.volunteer_cta_image || null,
+  });
 }
 
 // Populates the Donate form's program dropdown.

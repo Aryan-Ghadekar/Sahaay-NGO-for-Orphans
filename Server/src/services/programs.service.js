@@ -29,6 +29,26 @@ export async function createProgram({ name, category, description }) {
   return data;
 }
 
+export async function updateProgram(id, { name, category, description, isActive }) {
+  const { data, error } = await supabaseAdmin
+    .from('programs')
+    .update({ name, category, description, is_active: isActive })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// program_id references on beneficiaries/events/donations are all
+// `on delete set null` (see schema.sql) — removing a program un-earmarks
+// those rows rather than cascading, so this is safe even for a program
+// with history behind it.
+export async function deleteProgram(id) {
+  const { error } = await supabaseAdmin.from('programs').delete().eq('id', id);
+  if (error) throw error;
+}
+
 export async function countPrograms({ isActive }) {
   const { count, error } = await supabaseAdmin
     .from('programs')

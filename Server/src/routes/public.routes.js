@@ -8,3 +8,4 @@ publicRoutes.get('/impact-stats', asyncHandler(publicController.getImpactStats))
 publicRoutes.get('/impact-breakdown', asyncHandler(publicController.getImpactBreakdown));
 publicRoutes.get('/events', asyncHandler(publicController.getEvents));
 publicRoutes.get('/programs', asyncHandler(publicController.getPrograms));
+publicRoutes.get('/site-images', asyncHandler(publicController.getSiteImages));

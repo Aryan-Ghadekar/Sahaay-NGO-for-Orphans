@@ -42,6 +42,30 @@ export async function listAssignmentQueue(eventId) {
   return data;
 }
 
+// The full Staff "Assignments" page: pending applications across EVERY
+// event, not just one — the dashboard's queue only shows the single
+// most-in-need event, this shows all of them.
+export async function listAllPendingApplications() {
+  const { data, error } = await supabaseAdmin
+    .from('applications')
+    .select('id, match_score, status, applied_at, events(id, title), volunteers(skills, availability, profiles(full_name))')
+    .eq('status', 'under_review')
+    .order('applied_at', { ascending: true });
+  if (error) throw error;
+  return data;
+}
+
+// Approved applications not yet marked in `attendance` — what Staff's
+// Attendance page offers to record.
+export async function listApprovedAwaitingAttendance() {
+  const { data, error } = await supabaseAdmin
+    .from('applications')
+    .select('id, events(id, title, event_date), volunteers(id, profiles(full_name)), attendance(id)')
+    .eq('status', 'approved');
+  if (error) throw error;
+  return (data || []).filter((r) => !r.attendance || r.attendance.length === 0);
+}
+
 export async function countPending() {
   const { count, error } = await supabaseAdmin
     .from('applications')

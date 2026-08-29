@@ -19,8 +19,13 @@ choice; see the note at the bottom of this section):
    but the app looks a lot more like a real product with it than without)
 4. `supabase/004_donation_payment_proof.sql` — adds the columns the Donate
    flow's payment-screenshot upload needs
+5. `supabase/005_donation_impact_ai.sql` — adds the column that flags
+   whether a donation's impact note was AI-generated
+6. `supabase/006_beneficiary_pii_fields.sql` — adds contact/guardian/
+   address/history columns to beneficiaries (admin-only; staff never see
+   these)
 
-All four are safe to re-run if you need to.
+All six are safe to re-run if you need to.
 
 > Supabase's SQL editor flags `schema.sql` for creating tables without RLS
 > enabled and offers "Run and enable RLS" — take that option. It costs
@@ -39,6 +44,10 @@ Fill in from your Supabase project's **Settings → API** page:
 - `SUPABASE_ANON_KEY` — the `anon` `public` key
 - `SUPABASE_SERVICE_ROLE_KEY` — the `service_role` `secret` key (never
   expose this to the frontend or commit it)
+- `GEMINI_API_KEY` — optional, from [Google AI Studio](https://aistudio.google.com/apikey).
+  Powers the admin's "✨ Generate with AI" button on the Impact Record form,
+  which drafts a donor-facing impact sentence from the outcome the admin
+  typed. Leave blank to disable — the rest of the app works fine without it.
 
 ## 3. Run it
 
@@ -47,7 +56,7 @@ npm install
 npm run dev     # http://localhost:4000, restarts on file changes
 ```
 
-`GET /health` returns `{"ok":true}` without touching Supabase — a quick
+`GET /health` returns `{"ok":true}` without touching Supabase — a quick 
 way to confirm the server itself is up before debugging anything else.
 
 ## 4. Create your first accounts

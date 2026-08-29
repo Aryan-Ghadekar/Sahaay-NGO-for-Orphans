@@ -39,6 +39,7 @@ export async function getImpactFlow(req, res) {
     note:
       donation.impact_note &&
       `Your contribution helped support the ${donation.programs?.name || 'program'}'s work. ${donation.outcome || ''}`,
+    aiGenerated: !!donation.impact_ai_generated,
   });
 }
 

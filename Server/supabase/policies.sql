@@ -94,10 +94,13 @@ create policy "events: staff/admin delete" on events
   for delete using (auth_role() in ('staff', 'admin'));
 
 -- ---------- beneficiaries ----------
--- Staff/admin only — this table holds children's records. (The backend's
--- staff-facing controller additionally omits full_name from the query
--- itself, per the product's "operational view" language; this policy is
--- the hard backstop if that ever slips.)
+-- Staff/admin only — this table holds children's records. Postgres RLS is
+-- row-level, not column-level, so it can't by itself stop staff from
+-- reading full_name/contact_number/guardian_name/address/background_notes
+-- the way admin can — that distinction is enforced in the backend's
+-- staff-facing query (listBeneficiariesOperational masks full_name and
+-- never selects the other PII columns at all). This policy is the hard
+-- backstop against reading the table with no role check at all.
 drop policy if exists "beneficiaries: staff/admin only" on beneficiaries;
 create policy "beneficiaries: staff/admin only" on beneficiaries
   for all using (auth_role() in ('staff', 'admin'));
