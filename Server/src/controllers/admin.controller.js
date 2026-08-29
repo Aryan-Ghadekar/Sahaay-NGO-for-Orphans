@@ -223,27 +223,28 @@ export async function getEvents(req, res) {
       volunteersNeeded: r.volunteers_needed,
       expectedImpact: r.expected_impact || '',
       image: r.image_data_url || null,
+      minHoursRequired: Number(r.min_hours_required) || 0,
     }))
   );
 }
 
 export async function createEvent(req, res) {
-  const { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl } = req.body;
+  const { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired } = req.body;
   if (!title) return res.status(400).json({ error: 'title is required' });
   if (imageDataUrl && !/^data:image\//i.test(imageDataUrl)) {
     return res.status(400).json({ error: 'imageDataUrl must be a data:image/ URL' });
   }
-  const event = await eventsService.createEvent({ title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl });
+  const event = await eventsService.createEvent({ title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired });
   res.status(201).json(event);
 }
 
 export async function updateEvent(req, res) {
-  const { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl } = req.body;
+  const { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired } = req.body;
   if (!title) return res.status(400).json({ error: 'title is required' });
   if (imageDataUrl && !/^data:image\//i.test(imageDataUrl)) {
     return res.status(400).json({ error: 'imageDataUrl must be a data:image/ URL' });
   }
-  const event = await eventsService.updateEvent(req.params.id, { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl });
+  const event = await eventsService.updateEvent(req.params.id, { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired });
   res.json(event);
 }
 
@@ -252,7 +253,7 @@ export async function deleteEvent(req, res) {
   res.status(204).end();
 }
 
-// ---------- Volunteers (full — includes email) ----------
+// ---------- Volunteers (full — includes email + personal details) ----------
 export async function getVolunteers(req, res) {
   const rows = await volunteersService.listAllVolunteersFull();
   res.json(
@@ -260,7 +261,11 @@ export async function getVolunteers(req, res) {
       id: r.id,
       name: r.profiles?.full_name || '—',
       email: r.profiles?.email || '—',
+      dateOfBirth: r.date_of_birth || '—',
+      mobileNumber: r.mobile_number || '—',
+      address: r.address || '—',
       skills: (r.skills || []).join(', ') || '—',
+      qualification: r.qualification || '—',
       availability: r.availability || '—',
       location: r.location || '—',
     }))

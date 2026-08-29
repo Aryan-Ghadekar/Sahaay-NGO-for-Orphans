@@ -3,7 +3,7 @@ import { supabaseAdmin } from '../config/supabase.js';
 export async function listEventsByStatus(status) {
   const { data, error } = await supabaseAdmin
     .from('events')
-    .select('id, title, description, status, event_date, location, volunteers_needed, expected_impact, image_data_url, programs(name, category)')
+    .select('id, title, description, status, event_date, location, volunteers_needed, expected_impact, image_data_url, min_hours_required, programs(name, category)')
     .eq('status', status)
     .order('event_date', { ascending: true });
   if (error) throw error;
@@ -31,13 +31,13 @@ export async function countEventsByStatus(status) {
 export async function listAllEvents() {
   const { data, error } = await supabaseAdmin
     .from('events')
-    .select('id, title, description, status, event_date, location, volunteers_needed, expected_impact, image_data_url, programs(name, category)')
+    .select('id, title, description, status, event_date, location, volunteers_needed, expected_impact, image_data_url, min_hours_required, programs(name, category)')
     .order('event_date', { ascending: true });
   if (error) throw error;
   return data;
 }
 
-export async function createEvent({ title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl }) {
+export async function createEvent({ title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired }) {
   const { data, error } = await supabaseAdmin
     .from('events')
     .insert({
@@ -50,6 +50,7 @@ export async function createEvent({ title, description, programId, status, event
       volunteers_needed: volunteersNeeded || 0,
       expected_impact: expectedImpact || null,
       image_data_url: imageDataUrl || null,
+      min_hours_required: minHoursRequired || 0,
     })
     .select()
     .single();
@@ -57,7 +58,7 @@ export async function createEvent({ title, description, programId, status, event
   return data;
 }
 
-export async function updateEvent(id, { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl }) {
+export async function updateEvent(id, { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired }) {
   const update = {
     title,
     description,
@@ -67,6 +68,7 @@ export async function updateEvent(id, { title, description, programId, status, e
     location,
     volunteers_needed: volunteersNeeded,
     expected_impact: expectedImpact || null,
+    min_hours_required: minHoursRequired || 0,
   };
   // Only touch the image if a fresh one was actually uploaded — an omitted
   // field means "leave the existing image alone", not "clear it".

@@ -8,7 +8,7 @@ import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard';
 import VolunteerProfile from '../pages/volunteer/VolunteerProfile';
 import VolunteerAvailableEvents from '../pages/volunteer/VolunteerAvailableEvents';
 import VolunteerApplications from '../pages/volunteer/VolunteerApplications';
-import VolunteerAttendance from '../pages/volunteer/VolunteerAttendance';
+import VolunteerCertificates from '../pages/volunteer/VolunteerCertificates';
 import VolunteerHistory from '../pages/volunteer/VolunteerHistory';
 import StaffDashboard from '../pages/staff/StaffDashboard';
 import StaffVolunteers from '../pages/staff/StaffVolunteers';
@@ -46,7 +46,7 @@ export default function AppRoutes() {
       <Route path="/volunteer/profile" element={Volunteer(<VolunteerProfile />)} />
       <Route path="/volunteer/events" element={Volunteer(<VolunteerAvailableEvents />)} />
       <Route path="/volunteer/applications" element={Volunteer(<VolunteerApplications />)} />
-      <Route path="/volunteer/attendance" element={Volunteer(<VolunteerAttendance />)} />
+      <Route path="/volunteer/certificates" element={Volunteer(<VolunteerCertificates />)} />
       <Route path="/volunteer/history" element={Volunteer(<VolunteerHistory />)} />
 
       <Route path="/staff" element={Staff(<StaffDashboard />)} />

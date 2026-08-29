@@ -57,8 +57,15 @@ export function getAttendanceQueue() {
   return apiClient.get('/api/staff/attendance');
 }
 
-// payload: { applicationId, volunteerId, eventId, attended, hours }
+// payload: { applicationId, volunteerId, eventId, hours }
 export function markAttendance(payload) {
   if (apiClient.useMocks) return apiClient.mock({ ok: true, ...payload }, 400);
   return apiClient.post('/api/staff/attendance', payload);
+}
+
+// payload: { volunteerId, eventId } — hours are re-derived server-side from
+// the logged attendance row, not trusted from the client.
+export function issueCertificate(payload) {
+  if (apiClient.useMocks) return apiClient.mock({ ok: true, ...payload }, 400);
+  return apiClient.post('/api/staff/certificates', payload);
 }

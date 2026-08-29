@@ -35,7 +35,15 @@ export default function VolunteerDashboard() {
       <div className="volunteer-top">
         {profileLoading ? <Loader /> : (
           <Reveal className="card volunteer-profile-card">
-            <ImagePlaceholder label="Photo" shape="circle" style={{ width: 88, height: 88, margin: '0 auto' }} />
+            {profile.photoDataUrl ? (
+              <img
+                src={profile.photoDataUrl}
+                alt="Profile"
+                style={{ width: 88, height: 88, margin: '0 auto', display: 'block', borderRadius: '50%', objectFit: 'cover' }}
+              />
+            ) : (
+              <ImagePlaceholder label="Photo" shape="circle" style={{ width: 88, height: 88, margin: '0 auto' }} />
+            )}
             <p className="card-title">Volunteer Profile</p>
             <div className="volunteer-profile-card__tags">
               {profile.skills.map((s) => <span className="tag tag-sage" key={s}>{s}</span>)}

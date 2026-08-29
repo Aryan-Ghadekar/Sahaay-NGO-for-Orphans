@@ -1,12 +1,13 @@
 import { apiClient } from '../client';
-import { volunteerProfile, recommendedEvent, applications, availableEvents, attendanceHistory } from '../mockData/volunteer';
+import { volunteerProfile, recommendedEvent, applications, availableEvents, certificates } from '../mockData/volunteer';
 
 export function getVolunteerProfile() {
   if (apiClient.useMocks) return apiClient.mock(volunteerProfile);
   return apiClient.get('/api/volunteer/profile');
 }
 
-// payload: { skills: string[] | comma-string, qualification, availability, location }
+// payload: { firstName, lastName, dateOfBirth, mobileNumber, address, photoDataUrl,
+//   skills: string[] | comma-string, qualification, availability, location }
 export function updateVolunteerProfile(payload) {
   if (apiClient.useMocks) return apiClient.mock({ ok: true, ...payload }, 400);
   return apiClient.patch('/api/volunteer/profile', payload);
@@ -32,7 +33,7 @@ export function applyToEvent(eventId) {
   return apiClient.post('/api/volunteer/applications', { eventId });
 }
 
-export function getAttendance() {
-  if (apiClient.useMocks) return apiClient.mock(attendanceHistory);
-  return apiClient.get('/api/volunteer/attendance');
+export function getCertificates() {
+  if (apiClient.useMocks) return apiClient.mock(certificates);
+  return apiClient.get('/api/volunteer/certificates');
 }

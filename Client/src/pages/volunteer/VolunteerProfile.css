@@ -1,0 +1,19 @@
+.volunteer-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 640px) {
+  .volunteer-profile-grid { grid-template-columns: 1fr; }
+}
+
+.volunteer-photo-preview {
+  margin-top: 8px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 1px solid var(--color-neutral-200);
+  object-fit: cover;
+}

@@ -24,8 +24,17 @@ choice; see the note at the bottom of this section):
 6. `supabase/006_beneficiary_pii_fields.sql` — adds contact/guardian/
    address/history columns to beneficiaries (admin-only; staff never see
    these)
+7. `supabase/007_site_images.sql` — per-event and site-wide landing-page
+   images
+8. `supabase/008_beneficiary_intake_fields.sql` — adds first/last name,
+   date of birth, photo, and brought-by-person columns to beneficiaries
+9. `supabase/009_volunteer_profile_and_certificates.sql` — adds first/last
+   name, date of birth, mobile number, address, and photo columns to
+   volunteers; adds `min_hours_required` to events; adds the `certificates`
+   table and redefines `volunteer_stats` (attendance % is replaced by a
+   certificates-earned count)
 
-All six are safe to re-run if you need to.
+All nine are safe to re-run if you need to.
 
 > Supabase's SQL editor flags `schema.sql` for creating tables without RLS
 > enabled and offers "Run and enable RLS" — take that option. It costs

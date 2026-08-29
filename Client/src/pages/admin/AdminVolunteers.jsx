@@ -8,7 +8,11 @@ import { ADMIN_NAV } from '../../constants/nav';
 const COLUMNS = [
   { key: 'name', label: 'Name' },
   { key: 'email', label: 'Email' },
+  { key: 'mobileNumber', label: 'Mobile' },
+  { key: 'dateOfBirth', label: 'Date of Birth' },
+  { key: 'address', label: 'Address' },
   { key: 'skills', label: 'Skills' },
+  { key: 'qualification', label: 'Qualification' },
   { key: 'availability', label: 'Availability' },
   { key: 'location', label: 'Location' },
 ];

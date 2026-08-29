@@ -13,4 +13,4 @@ volunteerRoutes.get('/recommended', asyncHandler(volunteerController.getRecommen
 volunteerRoutes.get('/events', asyncHandler(volunteerController.getAvailableEvents));
 volunteerRoutes.get('/applications', asyncHandler(volunteerController.getApplications));
 volunteerRoutes.post('/applications', asyncHandler(volunteerController.apply));
-volunteerRoutes.get('/attendance', asyncHandler(volunteerController.getAttendance));
+volunteerRoutes.get('/certificates', asyncHandler(volunteerController.getCertificates));

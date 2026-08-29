@@ -17,3 +17,4 @@ staffRoutes.get('/events', asyncHandler(staffController.getEvents));
 staffRoutes.get('/assignments/all', asyncHandler(staffController.getAllAssignments));
 staffRoutes.get('/attendance', asyncHandler(staffController.getAttendanceQueue));
 staffRoutes.post('/attendance', asyncHandler(staffController.markAttendance));
+staffRoutes.post('/certificates', asyncHandler(staffController.issueCertificate));

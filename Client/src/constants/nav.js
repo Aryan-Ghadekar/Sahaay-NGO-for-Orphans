@@ -17,7 +17,7 @@ export const VOLUNTEER_NAV = [
   { to: '/volunteer/profile', label: 'Profile' },
   { to: '/volunteer/events', label: 'Available Events' },
   { to: '/volunteer/applications', label: 'Applications' },
-  { to: '/volunteer/attendance', label: 'Attendance' },
+  { to: '/volunteer/certificates', label: 'Certificates' },
   { to: '/volunteer/history', label: 'History' },
 ];
 

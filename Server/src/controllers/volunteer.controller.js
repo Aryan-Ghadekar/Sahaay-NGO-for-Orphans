@@ -2,40 +2,55 @@ import * as volunteersService from '../services/volunteers.service.js';
 import * as eventsService from '../services/events.service.js';
 import * as applicationsService from '../services/applications.service.js';
 import * as attendanceService from '../services/attendance.service.js';
+import * as certificatesService from '../services/certificates.service.js';
 import { scoreMatch, pickRecommendedEvent } from '../utils/matching.js';
 import { formatApplicationStatus, formatDayMonthYear, formatMonthYear } from '../utils/format.js';
+import { isValidName, isValidPhone } from '../utils/validators.js';
 
 export async function getProfile(req, res) {
   const [volunteer, stats] = await Promise.all([
-    volunteersService.getVolunteerWithProfile(req.user.id),
+    volunteersService.getVolunteerFull(req.user.id),
     volunteersService.getVolunteerStats(req.user.id),
   ]);
 
   res.json({
     name: volunteer.profiles?.full_name || req.user.full_name,
+    firstName: volunteer.first_name || '',
+    lastName: volunteer.last_name || '',
+    dateOfBirth: volunteer.date_of_birth || '',
+    mobileNumber: volunteer.mobile_number || '',
+    address: volunteer.address || '',
+    photoDataUrl: volunteer.photo_data_url || '',
     skills: volunteer.skills || [],
     availability: volunteer.availability || 'Flexible',
     qualification: volunteer.qualification || '',
     location: volunteer.location || '',
     stats: [
       { value: stats.total_events, label: 'Total Events' },
-      { value: stats.events_attended, label: 'Events Attended' },
-      { value: `${stats.attendance_pct}%`, label: 'Attendance' },
       { value: stats.volunteer_hours, label: 'Volunteer Hours' },
+      { value: stats.certificates_earned, label: 'Certificates Earned' },
     ],
   });
 }
 
 export async function updateProfile(req, res) {
-  const { skills, qualification, availability, location } = req.body;
+  const { firstName, lastName, dateOfBirth, mobileNumber, address, photoDataUrl, skills, qualification, availability, location } = req.body;
+
+  if (!isValidName(firstName)) return res.status(400).json({ error: 'A valid first name (letters only) is required.' });
+  if (!isValidName(lastName)) return res.status(400).json({ error: 'A valid last name (letters only) is required.' });
+  if (!dateOfBirth) return res.status(400).json({ error: 'Date of birth is required.' });
+  const dob = new Date(dateOfBirth);
+  if (Number.isNaN(dob.getTime()) || dob > new Date()) return res.status(400).json({ error: 'Enter a valid date of birth.' });
+  if (!isValidPhone(mobileNumber)) return res.status(400).json({ error: 'A valid 10-digit mobile number is required.' });
+  if (!address || !address.trim()) return res.status(400).json({ error: 'Address is required.' });
+  if (photoDataUrl && !/^data:image\//i.test(photoDataUrl)) return res.status(400).json({ error: 'photoDataUrl must be a data:image/ URL' });
+
   const parsedSkills = Array.isArray(skills)
     ? skills
     : String(skills || '').split(',').map((s) => s.trim()).filter(Boolean);
   const volunteer = await volunteersService.updateVolunteerProfile(req.user.id, {
-    skills: parsedSkills,
-    qualification,
-    availability,
-    location,
+    firstName, lastName, dateOfBirth, mobileNumber, address, photoDataUrl,
+    skills: parsedSkills, qualification, availability, location,
   });
   res.json(volunteer);
 }
@@ -64,16 +79,33 @@ export async function getAvailableEvents(req, res) {
   );
 }
 
-export async function getAttendance(req, res) {
-  const rows = await attendanceService.listAttendanceForVolunteer(req.user.id);
+// Hours logged per event plus certificate status — replaces the old
+// Present/Absent attendance view. "eligible" just means the logged hours
+// meet that event's min_hours_required; issuing the certificate itself is
+// a separate staff/admin action.
+export async function getCertificates(req, res) {
+  const [rows, certificates] = await Promise.all([
+    attendanceService.listAttendanceForVolunteer(req.user.id),
+    certificatesService.listCertificatesForVolunteer(req.user.id),
+  ]);
+  const certByEvent = new Map(certificates.map((c) => [c.event_id, c]));
+
   res.json(
-    rows.map((r) => ({
-      id: r.id,
-      event: r.events?.title || '—',
-      date: formatMonthYear(r.recorded_at),
-      attended: r.attended,
-      hours: r.hours,
-    }))
+    rows.map((r) => {
+      const cert = certByEvent.get(r.event_id);
+      const minHours = Number(r.events?.min_hours_required) || 0;
+      return {
+        id: r.id,
+        event: r.events?.title || '—',
+        date: formatMonthYear(r.recorded_at),
+        hours: r.hours,
+        minHoursRequired: minHours,
+        eligible: r.hours >= minHours,
+        certificateIssued: !!cert,
+        issuedAt: cert ? formatDayMonthYear(cert.issued_at) : null,
+        volunteerName: req.user.full_name,
+      };
+    })
   );
 }
 

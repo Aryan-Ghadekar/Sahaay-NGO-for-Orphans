@@ -9,7 +9,7 @@ import './AdminEvents.css';
 
 const EMPTY = {
   title: '', description: '', programId: '', status: 'upcoming', eventDate: '',
-  location: '', volunteersNeeded: 0, expectedImpact: '', imageDataUrl: '',
+  location: '', volunteersNeeded: 0, expectedImpact: '', imageDataUrl: '', minHoursRequired: 0,
 };
 
 function toFormState(row) {
@@ -23,6 +23,7 @@ function toFormState(row) {
     volunteersNeeded: row.volunteersNeeded,
     expectedImpact: row.expectedImpact || '',
     imageDataUrl: row.image || '',
+    minHoursRequired: row.minHoursRequired || 0,
   };
 }
 
@@ -57,6 +58,9 @@ function EventFields({ form, set, programs, onImage }) {
         </div>
         <div className="field"><label>Volunteers needed</label>
           <input className="input" type="number" min="0" value={form.volunteersNeeded} onChange={set('volunteersNeeded')} />
+        </div>
+        <div className="field"><label>Minimum hours for certificate</label>
+          <input className="input" type="number" min="0" step="0.5" value={form.minHoursRequired} onChange={set('minHoursRequired')} />
         </div>
       </div>
       <div className="field"><label>Description</label>

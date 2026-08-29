@@ -37,14 +37,14 @@ export const adminPrograms = [
 ];
 
 export const adminEvents = [
-  { id: 'ev-1', title: 'Education Support Program', description: 'Weekly tutoring sessions.', programId: 'prog-1', program: 'Education Support', statusRaw: 'ongoing', status: 'Ongoing', eventDate: '2026-08-05', date: 'August 2026', location: 'Pune Center', volunteersNeeded: 6, expectedImpact: '40 students tutored', image: null },
-  { id: 'ev-2', title: 'Digital Literacy Drive', description: 'Computer basics workshop.', programId: 'prog-3', program: 'Digital Literacy', statusRaw: 'ongoing', status: 'Ongoing', eventDate: '2026-08-12', date: 'August 2026', location: 'Nashik Center', volunteersNeeded: 4, expectedImpact: '25 teenagers trained', image: null },
-  { id: 'ev-3', title: 'Health Camp for Children', description: 'Free pediatric check-ups.', programId: 'prog-2', program: 'Healthcare Program', statusRaw: 'upcoming', status: 'Upcoming', eventDate: '2026-09-10', date: 'September 2026', location: 'Mumbai Center', volunteersNeeded: 8, expectedImpact: '60 check-ups', image: null },
+  { id: 'ev-1', title: 'Education Support Program', description: 'Weekly tutoring sessions.', programId: 'prog-1', program: 'Education Support', statusRaw: 'ongoing', status: 'Ongoing', eventDate: '2026-08-05', date: 'August 2026', location: 'Pune Center', volunteersNeeded: 6, expectedImpact: '40 students tutored', image: null, minHoursRequired: 3 },
+  { id: 'ev-2', title: 'Digital Literacy Drive', description: 'Computer basics workshop.', programId: 'prog-3', program: 'Digital Literacy', statusRaw: 'ongoing', status: 'Ongoing', eventDate: '2026-08-12', date: 'August 2026', location: 'Nashik Center', volunteersNeeded: 4, expectedImpact: '25 teenagers trained', image: null, minHoursRequired: 4 },
+  { id: 'ev-3', title: 'Health Camp for Children', description: 'Free pediatric check-ups.', programId: 'prog-2', program: 'Healthcare Program', statusRaw: 'upcoming', status: 'Upcoming', eventDate: '2026-09-10', date: 'September 2026', location: 'Mumbai Center', volunteersNeeded: 8, expectedImpact: '60 check-ups', image: null, minHoursRequired: 0 },
 ];
 
 export const adminVolunteers = [
-  { id: 'vol-1', name: 'Ananya Rao', email: 'ananya@example.com', skills: 'Teaching, Math', availability: 'Weekdays', location: 'Pune Center' },
-  { id: 'vol-2', name: 'Karan Mehta', email: 'karan@example.com', skills: 'Teaching', availability: 'Weekdays', location: 'Nashik Center' },
+  { id: 'vol-1', name: 'Ananya Rao', email: 'ananya@example.com', mobileNumber: '9820011122', dateOfBirth: '1997-03-12', address: 'Kothrud, Pune', skills: 'Teaching, Math', qualification: "Bachelor's in Education", availability: 'Weekdays', location: 'Pune Center' },
+  { id: 'vol-2', name: 'Karan Mehta', email: 'karan@example.com', mobileNumber: '9845033344', dateOfBirth: '1995-11-02', address: 'College Road, Nashik', skills: 'Teaching', qualification: 'BSc Computer Science', availability: 'Weekdays', location: 'Nashik Center' },
 ];
 
 export const adminOrphans = [
