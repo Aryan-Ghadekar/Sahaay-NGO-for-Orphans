@@ -8,6 +8,7 @@ import * as profilesService from '../services/profiles.service.js';
 import * as geminiService from '../services/gemini.service.js';
 import * as siteContentService from '../services/siteContent.service.js';
 import { formatRupeesShort, formatRupees, formatMonthYear, formatEventStatus, formatProgress } from '../utils/format.js';
+import { isValidName, isValidPhone } from '../utils/validators.js';
 
 const TEAM_ROLES = new Set(['staff', 'admin']);
 
@@ -273,8 +274,11 @@ export async function getBeneficiaries(req, res) {
     rows.map((r) => ({
       id: r.id, // the real row id — needed for update/delete, unlike child_code
       childCode: r.child_code,
+      firstName: r.first_name || '',
+      lastName: r.last_name || '',
       name: r.full_name || '',
-      ageGroup: r.age_group || '',
+      dateOfBirth: r.date_of_birth || '',
+      ageGroup: r.age_display,
       programId: r.program_id || '',
       program: r.programs?.name || '—',
       attendancePct: r.attendance_pct,
@@ -285,20 +289,70 @@ export async function getBeneficiaries(req, res) {
       guardianName: r.guardian_name || '',
       address: r.address || '',
       backgroundNotes: r.background_notes || '',
+      broughtByName: r.brought_by_name || '',
+      broughtByRelation: r.brought_by_relation || '',
+      broughtByContact: r.brought_by_contact || '',
+      photoDataUrl: r.photo_data_url || '',
+      broughtByPhotoDataUrl: r.brought_by_photo_data_url || '',
     }))
   );
 }
 
+// Same field set backs both create and update — a beneficiary record is
+// never partially valid, so both endpoints require the whole intake form.
+function validateBeneficiaryInput({
+  firstName, lastName, dateOfBirth, contactNumber, guardianName, address, backgroundNotes,
+  broughtByName, broughtByRelation, broughtByContact,
+}) {
+  if (!isValidName(firstName)) return 'A valid first name (letters only) is required.';
+  if (!isValidName(lastName)) return 'A valid last name (letters only) is required.';
+  if (!dateOfBirth) return 'Date of birth is required.';
+  const dob = new Date(dateOfBirth);
+  if (Number.isNaN(dob.getTime()) || dob > new Date()) return 'Enter a valid date of birth.';
+  if (!isValidPhone(contactNumber)) return 'A valid 10-digit contact number is required.';
+  if (!isValidName(guardianName)) return 'A valid guardian/caretaker name is required.';
+  if (!address || !address.trim()) return 'Address / location is required.';
+  if (!backgroundNotes || !backgroundNotes.trim()) return 'History is required.';
+  if (!isValidName(broughtByName)) return "A valid name for the person who brought the child is required.";
+  if (!broughtByRelation || !broughtByRelation.trim()) return 'Relation to the child is required.';
+  if (!isValidPhone(broughtByContact)) return "A valid 10-digit contact number for the person who brought the child is required.";
+  return null;
+}
+
+function validateImageField(value, label) {
+  if (value && !/^data:image\//i.test(value)) return `${label} must be a data:image/ URL`;
+  return null;
+}
+
 export async function createBeneficiary(req, res) {
-  const { childCode, fullName, ageGroup, programId, attendancePct, progress, contactNumber, guardianName, address, backgroundNotes } = req.body;
-  if (!childCode) return res.status(400).json({ error: 'childCode is required' });
-  const row = await beneficiariesService.createBeneficiary({ childCode, fullName, ageGroup, programId, attendancePct, progress, contactNumber, guardianName, address, backgroundNotes });
+  const {
+    firstName, lastName, dateOfBirth, programId, contactNumber, guardianName, address, backgroundNotes,
+    broughtByName, broughtByRelation, broughtByContact, photoDataUrl, broughtByPhotoDataUrl,
+  } = req.body;
+  const validationError = validateBeneficiaryInput(req.body)
+    || validateImageField(photoDataUrl, 'photoDataUrl')
+    || validateImageField(broughtByPhotoDataUrl, 'broughtByPhotoDataUrl');
+  if (validationError) return res.status(400).json({ error: validationError });
+  const row = await beneficiariesService.createBeneficiary({
+    firstName, lastName, dateOfBirth, programId, contactNumber, guardianName, address, backgroundNotes,
+    broughtByName, broughtByRelation, broughtByContact, photoDataUrl, broughtByPhotoDataUrl,
+  });
   res.status(201).json(row);
 }
 
 export async function updateBeneficiary(req, res) {
-  const { childCode, fullName, ageGroup, programId, attendancePct, progress, contactNumber, guardianName, address, backgroundNotes } = req.body;
-  const row = await beneficiariesService.updateBeneficiary(req.params.id, { childCode, fullName, ageGroup, programId, attendancePct, progress, contactNumber, guardianName, address, backgroundNotes });
+  const {
+    firstName, lastName, dateOfBirth, programId, contactNumber, guardianName, address, backgroundNotes,
+    broughtByName, broughtByRelation, broughtByContact, photoDataUrl, broughtByPhotoDataUrl,
+  } = req.body;
+  const validationError = validateBeneficiaryInput(req.body)
+    || validateImageField(photoDataUrl, 'photoDataUrl')
+    || validateImageField(broughtByPhotoDataUrl, 'broughtByPhotoDataUrl');
+  if (validationError) return res.status(400).json({ error: validationError });
+  const row = await beneficiariesService.updateBeneficiary(req.params.id, {
+    firstName, lastName, dateOfBirth, programId, contactNumber, guardianName, address, backgroundNotes,
+    broughtByName, broughtByRelation, broughtByContact, photoDataUrl, broughtByPhotoDataUrl,
+  });
   res.json(row);
 }
 

@@ -153,6 +153,9 @@ button { font-family: inherit; }
   box-shadow: 0 0 0 3px var(--color-navy-100);
 }
 .input:read-only { background: var(--color-neutral-100); color: var(--color-neutral-700); }
+.input-error { border-color: var(--color-danger); }
+.input-error:focus { box-shadow: 0 0 0 3px var(--color-danger-100); }
+.field-error { color: var(--color-danger); font-size: 12px; font-weight: 500; }
 
 /* ---------- Tables ---------- */
 .table { width: 100%; border-collapse: collapse; }

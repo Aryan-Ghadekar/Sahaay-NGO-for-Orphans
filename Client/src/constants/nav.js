@@ -3,7 +3,6 @@
 // link and the route it points to can't drift apart.
 export const ADMIN_NAV = [
   { to: '/admin', label: 'Dashboard', end: true },
-  { to: '/admin/website', label: 'Public Website' },
   { to: '/admin/programs', label: 'NGOs / Programs' },
   { to: '/admin/events', label: 'Events' },
   { to: '/admin/donors', label: 'Donors' },
@@ -11,8 +10,6 @@ export const ADMIN_NAV = [
   { to: '/admin/orphans', label: 'Orphans' },
   { to: '/admin/donations', label: 'Donations' },
   { to: '/admin/impact', label: 'Impact' },
-  { to: '/admin/content', label: 'Content' },
-  { to: '/admin/settings', label: 'Settings' },
 ];
 
 export const VOLUNTEER_NAV = [

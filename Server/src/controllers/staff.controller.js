@@ -60,7 +60,7 @@ export async function getOrphanRecords(req, res) {
     rows.map((r) => ({
       id: r.child_code,
       name: r.full_name, // already masked ("ArXXXXX") by the service — never the real name
-      ageGroup: r.age_group,
+      ageGroup: r.age_display,
       program: r.programs?.name || '—',
       attendance: `${r.attendance_pct}%`,
       progress: formatProgress(r.progress),

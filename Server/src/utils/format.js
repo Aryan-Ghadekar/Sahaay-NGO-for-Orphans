@@ -48,3 +48,21 @@ const EVENT_STATUS_LABELS = { ongoing: 'Ongoing', upcoming: 'Upcoming', complete
 export function formatEventStatus(status) {
   return EVENT_STATUS_LABELS[status] || status;
 }
+
+// Derives a display age from date_of_birth so it's always current — never
+// stored, since a stored value would silently go stale as the child ages.
+export function calculateAge(dateOfBirth) {
+  if (!dateOfBirth) return null;
+  const dob = new Date(dateOfBirth);
+  if (Number.isNaN(dob.getTime())) return null;
+  const today = new Date();
+  let years = today.getFullYear() - dob.getFullYear();
+  let months = today.getMonth() - dob.getMonth();
+  if (today.getDate() < dob.getDate()) months -= 1;
+  if (months < 0) {
+    years -= 1;
+    months += 12;
+  }
+  if (years < 1) return `${months} month${months === 1 ? '' : 's'}`;
+  return `${years} yr${years === 1 ? '' : 's'}`;
+}

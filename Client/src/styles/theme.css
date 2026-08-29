@@ -33,6 +33,10 @@
   --color-sage-600: #6c8a58;
   --color-sage-100: #e9f0e2;
 
+  /* Danger — form validation errors */
+  --color-danger: #c0392b;
+  --color-danger-100: #fbe6e3;
+
   --font-heading: 'Poppins', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 
