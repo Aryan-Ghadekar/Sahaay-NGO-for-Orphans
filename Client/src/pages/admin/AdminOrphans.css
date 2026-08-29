@@ -28,6 +28,18 @@
   color: var(--color-navy-900);
 }
 
+.table-scroll {
+  overflow-x: auto;
+}
+
+.orphan-table-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  display: block;
+}
+
 .orphan-photo-preview {
   margin-top: 8px;
   max-width: 140px;

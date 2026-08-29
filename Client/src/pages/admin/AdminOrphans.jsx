@@ -10,6 +10,12 @@ import { ADMIN_NAV } from '../../constants/nav';
 import './AdminOrphans.css';
 
 const TODAY = new Date().toISOString().slice(0, 10);
+const TABLE_COLUMN_COUNT = 16;
+
+function truncate(text, max = 40) {
+  if (!text) return '—';
+  return text.length > max ? `${text.slice(0, max)}…` : text;
+}
 
 const EMPTY = {
   firstName: '', lastName: '', dateOfBirth: '', programId: '',
@@ -188,10 +194,19 @@ function BeneficiaryRow({ row, programs, onChanged }) {
   return (
     <>
       <tr>
+        <td>{row.photoDataUrl ? <img className="orphan-table-thumb" src={row.photoDataUrl} alt={row.name} /> : '—'}</td>
         <td>{row.childCode}</td>
         <td>{row.name || '—'}</td>
         <td>{row.ageGroup || '—'}</td>
         <td>{row.program}</td>
+        <td>{row.guardianName || '—'}</td>
+        <td>{row.contactNumber || '—'}</td>
+        <td title={row.address}>{truncate(row.address)}</td>
+        <td title={row.backgroundNotes}>{truncate(row.backgroundNotes)}</td>
+        <td>{row.broughtByName || '—'}</td>
+        <td>{row.broughtByRelation || '—'}</td>
+        <td>{row.broughtByContact || '—'}</td>
+        <td>{row.broughtByPhotoDataUrl ? <img className="orphan-table-thumb" src={row.broughtByPhotoDataUrl} alt={row.broughtByName} /> : '—'}</td>
         <td>{row.attendance}</td>
         <td><span className={`tag ${row.progress === 'on_track' ? 'tag-sage' : 'tag-outline'}`}>{row.progressLabel}</span></td>
         <td style={{ display: 'flex', gap: 8 }}>
@@ -203,7 +218,7 @@ function BeneficiaryRow({ row, programs, onChanged }) {
       </tr>
       {expanded && (
         <tr>
-          <td colSpan={7}>
+          <td colSpan={TABLE_COLUMN_COUNT}>
             <div className="orphan-detail-panel">
               <p className="dashboard-note" style={{ margin: '0 0 14px' }}>
                 Full personal details — contact, guardian, address, and history are never sent to
@@ -279,16 +294,23 @@ export default function AdminOrphans() {
       {loading ? <Loader /> : !beneficiaries.length ? (
         <p className="dashboard-note" style={{ marginBottom: 36 }}>No records yet — add the first one below.</p>
       ) : (
-        <table className="table" style={{ marginBottom: 36 }}>
-          <thead>
-            <tr><th>Child ID</th><th>Name</th><th>Age</th><th>Program</th><th>Attendance</th><th>Progress</th><th>Actions</th></tr>
-          </thead>
-          <tbody>
-            {beneficiaries.map((row) => (
-              <BeneficiaryRow key={row.id} row={row} programs={programs || []} onChanged={refetch} />
-            ))}
-          </tbody>
-        </table>
+        <div className="table-scroll" style={{ marginBottom: 36 }}>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Photo</th><th>Child ID</th><th>Name</th><th>Age</th><th>Program</th>
+                <th>Guardian</th><th>Contact</th><th>Address</th><th>History</th>
+                <th>Brought By</th><th>Relation</th><th>Brought-by Contact</th><th>Brought-by Photo</th>
+                <th>Attendance</th><th>Progress</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {beneficiaries.map((row) => (
+                <BeneficiaryRow key={row.id} row={row} programs={programs || []} onChanged={refetch} />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <div className="card" style={{ maxWidth: 640 }}>
