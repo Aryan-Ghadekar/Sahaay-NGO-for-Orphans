@@ -21,3 +21,5 @@ export const impactFlow = [
 
 export const impactNote =
   "Your contribution helped support the Education Program's school-supply initiative. This program distributed educational kits to students who required additional learning resources.";
+
+export const impactAiGenerated = true;

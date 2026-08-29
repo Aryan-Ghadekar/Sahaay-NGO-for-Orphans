@@ -1,4 +1,5 @@
-import ImagePlaceholder from '../common/ImagePlaceholder';
+import Photo from '../common/Photo';
+import { eventPhotoFor } from '../../assets/photos';
 import './EventCard.css';
 
 export default function EventCard({ event }) {
@@ -6,7 +7,7 @@ export default function EventCard({ event }) {
   return (
     <div className="event-card card card-hover">
       <div className="event-card__media">
-        <ImagePlaceholder label="Event photo" shape="rect" />
+        <Photo src={event.image || eventPhotoFor(event.category)} alt={event.title} shape="rect" />
       </div>
       <div className="event-card__body">
         <span className={`tag ${isUpcoming ? 'tag-outline' : 'tag-sage'}`}>{event.status}</span>

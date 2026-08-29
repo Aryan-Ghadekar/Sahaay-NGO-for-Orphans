@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 // Non-numeric values (e.g. "₹9.4L", "89%") pass through untouched on the
 // final frame — only the numeric part is worth animating.
 export function useCountUp(target, { duration = 1200 } = {}) {
-  const rawNumberStr = typeof target === 'number' ? String(target) : String(target).match(/[0-9.]+/)?.[0] ?? '';
+  // Strip everything but digits and the decimal point — NOT a match on the
+  // first contiguous digit run, which would stop at a thousands comma and
+  // turn "₹18,500" into 18 instead of 18500.
+  const rawNumberStr = typeof target === 'number' ? String(target) : String(target).replace(/[^0-9.]/g, '');
   const numeric = parseFloat(rawNumberStr);
   // Preserve the target's own decimal precision (e.g. "9.4" must land on
   // 9.4, not round to 9) while still animating smoothly toward it.

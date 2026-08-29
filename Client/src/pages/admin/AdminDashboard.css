@@ -67,6 +67,14 @@
 .admin-panel__icon--accent { background: var(--color-accent-100); color: var(--color-accent-700); }
 
 .admin-content-list { display: flex; flex-direction: column; gap: 10px; }
+.admin-dashboard__content-thumbs { display: flex; gap: 10px; margin-bottom: 14px; }
+.admin-dashboard__content-thumbs img {
+  width: 50%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-neutral-200);
+}
 .admin-content-row {
   display: flex;
   justify-content: space-between;
@@ -78,6 +86,23 @@
 }
 .admin-content-row:last-child { border-bottom: none; }
 .admin-form { display: flex; flex-direction: column; gap: 12px; }
+.admin-team-section { margin-top: 28px; max-width: 620px; }
+.admin-team__email { color: var(--color-neutral-600); font-weight: 400; }
+.admin-team__form {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-neutral-200);
+}
+.admin-team__form-title { font-size: 13px; font-weight: 700; color: var(--color-neutral-700); margin: 0; }
+.admin-form__success {
+  margin: -4px 0 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-sage-100);
+  color: var(--color-sage-600);
+  font-size: 13px;
+  font-weight: 600;
+}
 
 @media (max-width: 960px) {
   .admin-columns { grid-template-columns: 1fr; }

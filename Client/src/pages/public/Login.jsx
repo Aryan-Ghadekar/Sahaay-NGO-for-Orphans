@@ -1,25 +1,23 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { ROLES } from '../../constants/roles';
+import { ROLE_PATHS } from '../../constants/roles';
 import './Login.css';
 
-// Demo login: no real credential check yet — picks a role and calls the
-// (currently mocked) auth endpoint so the rest of the app already talks to
-// a real async login contract before a backend exists. Once real auth
-// exists, the role dropdown goes away — the backend returns the role tied
-// to the account, it isn't chosen at sign-in.
 export default function Login() {
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState(ROLES[0].value);
-  const { login, loading } = useAuth();
+  const [password, setPassword] = useState('');
+  const { login, loading, error } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(email || 'demo@sahaay.org', role);
-    const target = ROLES.find((r) => r.value === role)?.path || '/';
-    navigate(target);
+    try {
+      const user = await login(email, password);
+      navigate(ROLE_PATHS[user.role] || '/');
+    } catch {
+      // error is surfaced via useAuth().error below; nothing else to do here.
+    }
   };
 
   return (
@@ -32,22 +30,30 @@ export default function Login() {
           <input
             className="input"
             type="email"
+            required
             placeholder="you@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
         <label className="field">
-          <span>Continue as</span>
-          <select className="input" value={role} onChange={(e) => setRole(e.target.value)}>
-            {ROLES.map((r) => (
-              <option key={r.value} value={r.value}>{r.label}</option>
-            ))}
-          </select>
+          <span>Password</span>
+          <input
+            className="input"
+            type="password"
+            required
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </label>
+        {error && <p className="login-card__error">{error}</p>}
         <button className="btn btn-primary btn-block" type="submit" disabled={loading}>
           {loading ? 'Signing in…' : 'Login'}
         </button>
+        <p className="login-card__footnote">
+          New here? <Link to="/signup">Create an account</Link>
+        </p>
       </form>
     </div>
   );

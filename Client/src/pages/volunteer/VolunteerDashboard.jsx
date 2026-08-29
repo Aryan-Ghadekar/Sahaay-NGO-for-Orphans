@@ -1,28 +1,35 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import StatCard from '../../components/common/StatCard';
 import ImagePlaceholder from '../../components/common/ImagePlaceholder';
 import Reveal from '../../components/common/Reveal';
 import { Loader } from '../../components/common/AsyncState';
 import { useFetch } from '../../hooks/useFetch';
-import { getVolunteerProfile, getRecommendedEvent, getApplications } from '../../api/endpoints/volunteer';
+import { getVolunteerProfile, getRecommendedEvent, getApplications, applyToEvent } from '../../api/endpoints/volunteer';
+import { VOLUNTEER_NAV } from '../../constants/nav';
 import './VolunteerDashboard.css';
 
-const SIDEBAR_ITEMS = [
-  { to: '/volunteer', label: 'Dashboard', end: true },
-  { to: '/volunteer/profile', label: 'Profile' },
-  { to: '/volunteer/events', label: 'Available Events' },
-  { to: '/volunteer/applications', label: 'Applications' },
-  { to: '/volunteer/attendance', label: 'Attendance' },
-  { to: '/volunteer/history', label: 'History' },
-];
-
 export default function VolunteerDashboard() {
+  const navigate = useNavigate();
   const { data: profile, loading: profileLoading } = useFetch(getVolunteerProfile, []);
   const { data: recommended, loading: recommendedLoading } = useFetch(getRecommendedEvent, []);
   const { data: applications, loading: applicationsLoading } = useFetch(getApplications, []);
+  const [applyState, setApplyState] = useState('idle'); // idle | applying | applied | error
+
+  const handleApply = async () => {
+    if (!recommended?.eventId) return;
+    setApplyState('applying');
+    try {
+      await applyToEvent(recommended.eventId);
+      setApplyState('applied');
+    } catch {
+      setApplyState('error');
+    }
+  };
 
   return (
-    <DashboardLayout items={SIDEBAR_ITEMS}>
+    <DashboardLayout items={VOLUNTEER_NAV}>
       <h2 className="dashboard-title">Welcome back, Volunteer</h2>
 
       <div className="volunteer-top">
@@ -35,7 +42,7 @@ export default function VolunteerDashboard() {
               <span className="tag tag-outline">{profile.availability}</span>
             </div>
             <p className="volunteer-profile-card__meta">{profile.qualification}</p>
-            <button className="btn btn-secondary btn-block">Edit Profile</button>
+            <button className="btn btn-secondary btn-block" onClick={() => navigate('/volunteer/profile')}>Edit Profile</button>
           </Reveal>
         )}
         {!profileLoading && (
@@ -46,7 +53,9 @@ export default function VolunteerDashboard() {
       </div>
 
       <h3 className="dashboard-subheading">Recommended for You</h3>
-      {recommendedLoading ? <Loader /> : (
+      {recommendedLoading ? <Loader /> : !recommended ? (
+        <p className="dashboard-note">No new recommendations right now — check back soon.</p>
+      ) : (
         <Reveal className="card recommended-card">
           <div>
             <p className="card-title">{recommended.title} · {recommended.match}</p>
@@ -57,7 +66,9 @@ export default function VolunteerDashboard() {
               <span className="tag tag-outline">Location ✓</span>
             </div>
           </div>
-          <button className="btn btn-primary">Apply</button>
+          <button className="btn btn-primary" onClick={handleApply} disabled={applyState !== 'idle'}>
+            {applyState === 'applying' ? 'Applying…' : applyState === 'applied' ? 'Applied' : 'Apply'}
+          </button>
         </Reveal>
       )}
 

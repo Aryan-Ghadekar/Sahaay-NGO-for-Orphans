@@ -1,3 +1,14 @@
+export const siteImages = {
+  hero_image: null,
+  volunteer_cta_image: null,
+};
+
+export const programs = [
+  { id: 'prog-education', name: 'Education Support' },
+  { id: 'prog-healthcare', name: 'Healthcare Program' },
+  { id: 'prog-digital', name: 'Digital Literacy' },
+];
+
 export const impactStats = [
   { value: 1240, label: 'Children Supported' },
   { value: 38, label: 'Programs' },
@@ -21,6 +32,7 @@ export const ongoingEvents = [
     status: 'Ongoing',
     description: 'Providing educational support and learning resources to children.',
     meta: 'Date: August 2026 · Location: Pune Center',
+    category: 'Education',
   },
   {
     id: 'ev-ongoing-2',
@@ -28,6 +40,7 @@ export const ongoingEvents = [
     status: 'Ongoing',
     description: 'Teaching foundational computer skills to teenagers in the program.',
     meta: 'Date: August 2026 · Location: Nashik Center',
+    category: 'Digital Literacy',
   },
 ];
 
@@ -39,6 +52,7 @@ export const upcomingEvents = [
     description: 'Free health check-ups and vaccination drive for supported children.',
     meta: 'Date: September 2026 · Location: Mumbai Center',
     impact: 'Expected Impact: 300 children screened',
+    category: 'Healthcare',
   },
   {
     id: 'ev-upcoming-2',
@@ -47,5 +61,6 @@ export const upcomingEvents = [
     description: 'A day of mentoring, sports and creative activities with volunteers.',
     meta: 'Date: September 2026 · Location: Pune Center',
     impact: 'Expected Impact: 80 volunteers engaged',
+    category: 'Community',
   },
 ];

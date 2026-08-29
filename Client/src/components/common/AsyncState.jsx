@@ -11,6 +11,18 @@ export function Loader({ label = 'Loading…' }) {
   );
 }
 
+// Full-page centered spinner — shown while the whole app is still figuring
+// out who's logged in (see ProtectedRoute's `initializing` check), as
+// opposed to Loader's small inline one used inside an already-rendered
+// page while a section's data fetches.
+export function PageLoader() {
+  return (
+    <div className="page-loader">
+      <span className="page-loader__spinner" />
+    </div>
+  );
+}
+
 export function ErrorState({ error, onRetry }) {
   return (
     <div className="async-error">

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 // Generic data-fetching hook every dashboard page uses instead of hand
 // rolling loading/error state per component. `fn` is any endpoint function
@@ -10,7 +10,7 @@ export function useFetch(fn, deps = []) {
   const fnRef = useRef(fn);
   fnRef.current = fn;
 
-  useEffect(() => {
+  const run = useCallback(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -22,5 +22,12 @@ export function useFetch(fn, deps = []) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
-  return { data, loading, error };
+  useEffect(run, [run]);
+
+  // Re-runs the same fetch on demand — e.g. after a mutation that should
+  // update what this hook is showing (create a team member, then refresh
+  // the team list) without a full page reload.
+  const refetch = useCallback(() => run(), [run]);
+
+  return { data, loading, error, refetch };
 }

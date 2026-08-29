@@ -1,22 +1,61 @@
 .app-footer {
   background: var(--color-navy-900);
   color: rgba(255, 255, 255, 0.75);
-  padding: 40px 0;
+  padding: 64px 0 0;
   margin-top: 60px;
 }
-.app-footer__inner {
+
+.app-footer__grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1.2fr;
+  gap: 40px;
+  padding: 0 40px 48px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.app-footer__brand { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+.app-footer__tagline { font-weight: 600; color: #fff; margin: 0; }
+.app-footer__blurb {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  max-width: 320px;
+}
+.app-footer__social { display: flex; gap: 10px; margin-top: 4px; }
+.app-footer__social-link {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  text-align: center;
-  padding: 0 40px;
-}
-.app-footer__tagline {
-  font-weight: 600;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
+  transition: background var(--transition-fast), transform var(--transition-fast);
 }
-.app-footer__copy {
-  font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.5);
+.app-footer__social-link:hover { background: var(--color-accent); transform: translateY(-2px); color: #fff; }
+
+.app-footer__heading {
+  color: #fff;
+  font-size: 15px;
+  margin: 0 0 18px;
+  font-family: var(--font-heading);
+}
+.app-footer__links { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.app-footer__links a { color: rgba(255, 255, 255, 0.7); font-size: 14px; }
+.app-footer__links a:hover { color: #fff; }
+
+.app-footer__contact { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.app-footer__contact li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: rgba(255, 255, 255, 0.75); line-height: 1.5; }
+.app-footer__contact svg { flex-shrink: 0; margin-top: 2px; color: var(--color-accent); }
+.app-footer__contact a { color: rgba(255, 255, 255, 0.75); }
+.app-footer__contact a:hover { color: #fff; }
+
+.app-footer__bottom { padding: 22px 40px; text-align: center; }
+.app-footer__copy { font-size: 12.5px; color: rgba(255, 255, 255, 0.5); margin: 0; }
+
+@media (max-width: 780px) {
+  .app-footer__grid { grid-template-columns: 1fr; gap: 32px; padding: 0 20px 40px; }
+  .app-footer__bottom { padding: 22px 20px; }
 }

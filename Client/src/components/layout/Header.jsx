@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Logo from './Logo';
 import { useAuth } from '../../context/AuthContext';
+import { useDonateModal } from '../../context/DonateModalContext';
 import { ROLE_LABELS, ROLE_PATHS } from '../../constants/roles';
 import './Header.css';
 
@@ -20,10 +21,11 @@ const MARKETING_LINKS = [
 // not by a button here.
 export default function Header() {
   const { isAuthenticated, role, logout } = useAuth();
+  const { open: openDonateModal } = useDonateModal();
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === '/';
-  const isLogin = location.pathname === '/login';
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
 
   const handleLogout = async () => {
     await logout();
@@ -42,8 +44,11 @@ export default function Header() {
         </nav>
       )}
 
-      {!isLogin && (
+      {!isAuthPage && (
         <div className="app-header__actions">
+          {isHome && (
+            <button className="btn btn-primary btn-sm" onClick={openDonateModal}>Donate</button>
+          )}
           {isAuthenticated ? (
             <>
               {isHome && (
@@ -53,10 +58,7 @@ export default function Header() {
               <button className="btn btn-secondary btn-sm" onClick={handleLogout}>Logout</button>
             </>
           ) : isHome ? (
-            <>
-              <Link className="btn btn-secondary btn-sm" to="/login">Login</Link>
-              <a className="btn btn-primary btn-sm" href="#volunteer">Donate</a>
-            </>
+            <Link className="btn btn-secondary btn-sm" to="/login">Login</Link>
           ) : null}
         </div>
       )}

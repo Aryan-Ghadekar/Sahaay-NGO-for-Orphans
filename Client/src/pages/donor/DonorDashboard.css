@@ -1,4 +1,11 @@
 .donor-dashboard { padding: 48px 40px 80px; }
+.donor-dashboard__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 .donor-dashboard__stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

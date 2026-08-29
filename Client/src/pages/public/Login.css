@@ -15,3 +15,17 @@
 }
 .login-card__title { font-size: 24px; margin: 0; }
 .login-card__subtitle { color: var(--color-neutral-700); font-size: 13.5px; margin: -8px 0 4px; }
+.login-card__error {
+  margin: -6px 0 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-100);
+  color: var(--color-accent-700);
+  font-size: 13px;
+}
+.login-card__footnote {
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--color-neutral-700);
+  margin: 4px 0 0;
+}

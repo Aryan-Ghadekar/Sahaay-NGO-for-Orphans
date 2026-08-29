@@ -1,0 +1,30 @@
+.trust-strip {
+  background: var(--color-navy-900);
+  padding: 20px 0;
+}
+.trust-strip__row {
+  padding: 0 40px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 14px 0;
+}
+.trust-strip__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  white-space: nowrap;
+  padding: 0 28px;
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
+}
+.trust-strip__badge:last-child { border-right: none; }
+.trust-strip__badge svg { color: var(--color-accent); flex-shrink: 0; }
+
+@media (max-width: 780px) {
+  .trust-strip__row { padding: 0 20px; }
+  .trust-strip__badge { font-size: 12px; padding: 0 14px; border-right: none; }
+}

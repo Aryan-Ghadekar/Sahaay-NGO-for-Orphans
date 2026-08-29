@@ -1,0 +1,29 @@
+.event-detail-panel {
+  padding: 18px 4px;
+  border-top: 1px solid var(--color-neutral-200);
+  border-bottom: 1px solid var(--color-neutral-200);
+  background: var(--color-neutral-100);
+}
+
+.event-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.event-detail-preview {
+  width: 160px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  margin-top: 8px;
+  border: 1px solid var(--color-neutral-200);
+}
+
+@media (max-width: 900px) {
+  .event-detail-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .event-detail-grid { grid-template-columns: 1fr; }
+}

@@ -2,28 +2,33 @@ import DashboardLayout from '../../components/layout/DashboardLayout';
 import StatCard from '../../components/common/StatCard';
 import Reveal from '../../components/common/Reveal';
 import { Loader } from '../../components/common/AsyncState';
+import { useState } from 'react';
 import { useFetch } from '../../hooks/useFetch';
-import { getStaffOverview, getAssignmentQueue, getOrphanRecords } from '../../api/endpoints/staff';
+import { getStaffOverview, getAssignmentQueue, getOrphanRecords, assignApplication } from '../../api/endpoints/staff';
+import { STAFF_NAV } from '../../constants/nav';
 import './StaffDashboard.css';
-
-const SIDEBAR_ITEMS = [
-  { to: '/staff', label: 'Dashboard', end: true },
-  { to: '/staff/volunteers', label: 'Volunteers' },
-  { to: '/staff/orphans', label: 'Orphans' },
-  { to: '/staff/events', label: 'Events' },
-  { to: '/staff/programs', label: 'Programs' },
-  { to: '/staff/assignments', label: 'Assignments' },
-  { to: '/staff/attendance', label: 'Attendance' },
-  { to: '/staff/statistics', label: 'Statistics' },
-];
 
 export default function StaffDashboard() {
   const { data: overview, loading: overviewLoading } = useFetch(getStaffOverview, []);
   const { data: queue, loading: queueLoading } = useFetch(getAssignmentQueue, []);
   const { data: orphans, loading: orphansLoading } = useFetch(getOrphanRecords, []);
+  const [assignedIds, setAssignedIds] = useState(new Set());
+
+  const handleAssign = async (applicationId) => {
+    setAssignedIds((prev) => new Set(prev).add(applicationId));
+    try {
+      await assignApplication(applicationId);
+    } catch {
+      setAssignedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(applicationId);
+        return next;
+      });
+    }
+  };
 
   return (
-    <DashboardLayout items={SIDEBAR_ITEMS}>
+    <DashboardLayout items={STAFF_NAV}>
       <h2 className="dashboard-title">NGO Dashboard</h2>
       <p className="dashboard-note">
         Operational view only — personal details of volunteers and children are restricted to Administrators.
@@ -39,15 +44,26 @@ export default function StaffDashboard() {
       {queueLoading ? <Loader /> : (
         <table className="table" style={{ marginBottom: 40 }}>
           <thead>
-            <tr><th>Volunteer ID</th><th>Match Score</th><th>Skills</th><th>Availability</th><th>Action</th></tr>
+            <tr><th>Volunteer</th><th>Match Score</th><th>Skills</th><th>Availability</th><th>Action</th></tr>
           </thead>
           <tbody>
-            {queue.map((v) => (
-              <tr key={v.id}>
-                <td>{v.id}</td><td>{v.match}</td><td>{v.skills}</td><td>{v.availability}</td>
-                <td><button className="btn btn-secondary btn-sm">Assign</button></td>
-              </tr>
-            ))}
+            {queue.map((v) => {
+              const assigned = assignedIds.has(v.id);
+              return (
+                <tr key={v.id}>
+                  <td>{v.name}</td><td>{v.match}</td><td>{v.skills}</td><td>{v.availability}</td>
+                  <td>
+                    <button
+                      className="btn btn-secondary btn-sm"
+                      disabled={assigned}
+                      onClick={() => handleAssign(v.id)}
+                    >
+                      {assigned ? 'Assigned' : 'Assign'}
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
