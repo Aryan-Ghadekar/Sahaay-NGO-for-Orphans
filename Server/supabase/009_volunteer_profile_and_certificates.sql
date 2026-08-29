@@ -40,7 +40,10 @@ create policy "certificates: staff/admin insert" on certificates
 -- Attendance % is gone from the volunteer dashboard (replaced by
 -- certificates_earned) — this view drops events_attended/attendance_pct
 -- and adds the certificate count alongside the existing hours total.
-create or replace view volunteer_stats as
+-- `create or replace view` can only append columns, not remove/reorder
+-- them, so the old definition has to be dropped first.
+drop view if exists volunteer_stats;
+create view volunteer_stats as
 select
   v.id as volunteer_id,
   count(distinct a.event_id) as total_events,
