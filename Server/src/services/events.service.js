@@ -13,7 +13,7 @@ export async function listEventsByStatus(status) {
 export async function listUpcomingEventsRaw() {
   const { data, error } = await supabaseAdmin
     .from('events')
-    .select('id, title, description, location, volunteers_needed')
+    .select('id, title, description, event_date, location, volunteers_needed, programs(category)')
     .eq('status', 'upcoming');
   if (error) throw error;
   return data;
@@ -94,7 +94,10 @@ export async function deleteEvent(id) {
 }
 
 export async function getEventById(id) {
-  const { data, error } = await supabaseAdmin.from('events').select('*').eq('id', id).single();
+  // The category join keeps scoreMatch's skill corpus (title+description+
+  // category) consistent between what a volunteer saw before applying and
+  // what apply() persists to applications.match_score.
+  const { data, error } = await supabaseAdmin.from('events').select('*, programs(category)').eq('id', id).single();
   if (error) throw error;
   return data;
 }

@@ -22,6 +22,9 @@ export const recommendedEvent = {
   title: 'Mathematics Support',
   match: '96% Match',
   meta: 'Weekday afternoons · Pune Center · 4 volunteers needed',
+  skillsMatch: true,
+  availabilityMatch: true,
+  locationMatch: true,
 };
 
 export const applications = [

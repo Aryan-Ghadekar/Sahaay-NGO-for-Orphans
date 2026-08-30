@@ -65,15 +65,22 @@ export async function getAvailableEvents(req, res) {
     applicationsService.listAppliedEventIds(req.user.id),
   ]);
 
+  // Scored first as numbers and sorted descending so the page's "ranked by
+  // how well it matches" claim is actually true, instead of the prior
+  // event-date ordering the score was just decorating.
+  const scored = upcoming
+    .map((event) => ({ event, score: scoreMatch(volunteer, event) }))
+    .sort((a, b) => b.score - a.score);
+
   res.json(
-    upcoming.map((event) => ({
+    scored.map(({ event, score }) => ({
       id: event.id,
       title: event.title,
       program: event.programs?.name || '—',
       location: event.location || '—',
       date: event.event_date ? formatMonthYear(event.event_date) : '—',
       volunteersNeeded: event.volunteers_needed,
-      match: `${scoreMatch(volunteer, event)}%`,
+      match: `${score}%`,
       applied: appliedEventIds.has(event.id),
     }))
   );
@@ -128,6 +135,9 @@ export async function getRecommended(req, res) {
     title: pick.event.title,
     match: `${pick.score}% Match`,
     meta: parts.join(' · '),
+    skillsMatch: pick.breakdown.skills.matched,
+    availabilityMatch: pick.breakdown.availability.matched,
+    locationMatch: pick.breakdown.location.matched,
   });
 }
 

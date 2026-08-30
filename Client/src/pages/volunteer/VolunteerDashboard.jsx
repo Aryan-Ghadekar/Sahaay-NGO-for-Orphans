@@ -69,9 +69,9 @@ export default function VolunteerDashboard() {
             <p className="card-title">{recommended.title} · {recommended.match}</p>
             <p className="recommended-card__meta">{recommended.meta}</p>
             <div className="recommended-card__facets">
-              <span className="tag tag-outline">Skills ✓</span>
-              <span className="tag tag-outline">Availability ✓</span>
-              <span className="tag tag-outline">Location ✓</span>
+              <span className={`tag ${recommended.skillsMatch ? 'tag-sage' : 'tag-outline'}`}>Skills {recommended.skillsMatch ? '✓' : '✗'}</span>
+              <span className={`tag ${recommended.availabilityMatch ? 'tag-sage' : 'tag-outline'}`}>Availability {recommended.availabilityMatch ? '✓' : '✗'}</span>
+              <span className={`tag ${recommended.locationMatch ? 'tag-sage' : 'tag-outline'}`}>Location {recommended.locationMatch ? '✓' : '✗'}</span>
             </div>
           </div>
           <button className="btn btn-primary" onClick={handleApply} disabled={applyState !== 'idle'}>
