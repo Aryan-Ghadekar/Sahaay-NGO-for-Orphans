@@ -8,6 +8,8 @@ import {
   staffEvents,
   allAssignments,
   attendanceQueue,
+  eventDetail,
+  orphanVisits,
 } from '../mockData/staff';
 
 export function getStaffOverview() {
@@ -45,6 +47,30 @@ export function getPrograms() {
 export function getEvents() {
   if (apiClient.useMocks) return apiClient.mock(staffEvents);
   return apiClient.get('/api/staff/events');
+}
+
+export function getEventDetail(id) {
+  if (apiClient.useMocks) return apiClient.mock(eventDetail);
+  return apiClient.get(`/api/staff/events/${id}`);
+}
+
+// payload: { itemKey, isDone }
+export function updateEventChecklist(id, payload) {
+  if (apiClient.useMocks) return apiClient.mock({ ok: true, ...payload }, 300);
+  return apiClient.patch(`/api/staff/events/${id}/checklist`, payload);
+}
+
+// Staff identifies a child only by Child ID — never the real beneficiary
+// UUID (see Server's getOrphanRecords, which returns child_code as `id`).
+export function getOrphanVisits(childCode) {
+  if (apiClient.useMocks) return apiClient.mock(orphanVisits);
+  return apiClient.get(`/api/staff/orphans/${childCode}/visits`);
+}
+
+// payload: { visitorName, relation, visitDate, notes }
+export function logOrphanVisit(childCode, payload) {
+  if (apiClient.useMocks) return apiClient.mock({ id: `visit-${Date.now()}`, ...payload }, 400);
+  return apiClient.post(`/api/staff/orphans/${childCode}/visits`, payload);
 }
 
 export function getAllAssignments() {

@@ -1,16 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Loader } from '../../components/common/AsyncState';
 import { useFetch } from '../../hooks/useFetch';
-import { getBeneficiaries, createBeneficiary, updateBeneficiary, deleteBeneficiary, getPrograms } from '../../api/endpoints/admin';
+import {
+  getBeneficiaries, createBeneficiary, updateBeneficiary, deleteBeneficiary, getPrograms,
+  getBeneficiaryVisits, logBeneficiaryVisit, deleteBeneficiaryVisit,
+} from '../../api/endpoints/admin';
 import { imageToDataUrl } from '../../utils/imageToDataUrl';
 import { calculateAge } from '../../utils/age';
 import { validateOrphanForm, sanitizePhoneInput } from '../../utils/orphanValidation';
+import { validateVisitForm } from '../../utils/visitValidation';
 import { ADMIN_NAV } from '../../constants/nav';
 import './AdminOrphans.css';
 
 const TODAY = new Date().toISOString().slice(0, 10);
 const TABLE_COLUMN_COUNT = 16;
+const EMPTY_VISIT = { visitorName: '', relation: '', visitDate: '', notes: '' };
 
 function truncate(text, max = 40) {
   if (!text) return '—';
@@ -132,6 +137,105 @@ function BeneficiaryFields({ form, set, programs, errors, onPhoto, onBroughtByPh
   );
 }
 
+// Loaded on demand once a row expands — a running history of who visited
+// this child, when, and their relation. Admin sees it with full context
+// (real name, in the panel above); staff can add the same kind of entry
+// via Child ID only (see StaffOrphans.jsx) but never delete one.
+function VisitorLog({ beneficiaryId }) {
+  const [visits, setVisits] = useState(null);
+  const [loadingVisits, setLoadingVisits] = useState(true);
+  const [form, setForm] = useState(EMPTY_VISIT);
+  const [errors, setErrors] = useState({});
+  const [saving, setSaving] = useState(false);
+
+  const load = async () => {
+    setLoadingVisits(true);
+    try {
+      setVisits(await getBeneficiaryVisits(beneficiaryId));
+    } finally {
+      setLoadingVisits(false);
+    }
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, []);
+
+  const set = (field) => (e) => {
+    setForm((f) => ({ ...f, [field]: e.target.value }));
+    setErrors((er) => ({ ...er, [field]: undefined }));
+  };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validateVisitForm(form);
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
+      return;
+    }
+    setSaving(true);
+    try {
+      await logBeneficiaryVisit(beneficiaryId, form);
+      setForm(EMPTY_VISIT);
+      setErrors({});
+      load();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (visitId) => {
+    if (!window.confirm('Remove this visit record? This can\'t be undone.')) return;
+    await deleteBeneficiaryVisit(beneficiaryId, visitId);
+    load();
+  };
+
+  const err = (field) => errors[field] && <span className="field-error">{errors[field]}</span>;
+  const cls = (field) => `input${errors[field] ? ' input-error' : ''}`;
+
+  return (
+    <>
+      <h4 className="orphan-section-heading">Visitor Log</h4>
+      {loadingVisits ? <Loader /> : !visits?.length ? (
+        <p className="dashboard-note" style={{ marginBottom: 14 }}>No visits logged yet.</p>
+      ) : (
+        <table className="table" style={{ marginBottom: 14 }}>
+          <thead><tr><th>Visitor</th><th>Relation</th><th>Date</th><th>Notes</th><th></th></tr></thead>
+          <tbody>
+            {visits.map((v) => (
+              <tr key={v.id}>
+                <td>{v.visitorName}</td><td>{v.relation}</td><td>{v.visitDate}</td><td>{v.notes || '—'}</td>
+                <td><button className="btn btn-secondary btn-sm" onClick={() => remove(v.id)}>Delete</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      <form onSubmit={submit}>
+        <div className="orphan-detail-grid">
+          <div className="field"><label>Visitor name</label>
+            <input className={cls('visitorName')} value={form.visitorName} onChange={set('visitorName')} />
+            {err('visitorName')}
+          </div>
+          <div className="field"><label>Relation to child</label>
+            <input className={cls('relation')} placeholder="e.g. Aunt, Neighbor" value={form.relation} onChange={set('relation')} />
+            {err('relation')}
+          </div>
+          <div className="field"><label>Visit date</label>
+            <input className={cls('visitDate')} type="date" max={TODAY} value={form.visitDate} onChange={set('visitDate')} />
+            {err('visitDate')}
+          </div>
+        </div>
+        <div className="field"><label>Notes (optional)</label>
+          <textarea className="input" rows={2} value={form.notes} onChange={set('notes')} />
+        </div>
+        <button className="btn btn-primary btn-sm" type="submit" disabled={saving} style={{ marginTop: 8 }}>
+          {saving ? 'Saving…' : 'Add Visit'}
+        </button>
+      </form>
+    </>
+  );
+}
+
 function BeneficiaryRow({ row, programs, onChanged }) {
   const [expanded, setExpanded] = useState(false);
   const [form, setForm] = useState(toFormState(row));
@@ -225,10 +329,11 @@ function BeneficiaryRow({ row, programs, onChanged }) {
                 NGO staff accounts.
               </p>
               <BeneficiaryFields form={form} set={set} programs={programs} errors={errors} onPhoto={onPhoto} onBroughtByPhoto={onBroughtByPhoto} />
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              <div style={{ display: 'flex', gap: 8, marginTop: 8, marginBottom: 20 }}>
                 <button className="btn btn-primary btn-sm" onClick={save} disabled={busy}>{busy ? 'Saving…' : 'Save'}</button>
                 <button className="btn btn-secondary btn-sm" onClick={() => setExpanded(false)} disabled={busy}>Cancel</button>
               </div>
+              <VisitorLog beneficiaryId={row.id} />
             </div>
           </td>
         </tr>

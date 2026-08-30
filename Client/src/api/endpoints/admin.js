@@ -12,6 +12,8 @@ import {
   unallocatedFunds,
   impactRecordDrafts,
   siteImages,
+  adminEventDetail,
+  beneficiaryVisits,
 } from '../mockData/admin';
 
 export function getAdminOverview() {
@@ -109,6 +111,33 @@ export function updateEvent(id, payload) {
 export function deleteEvent(id) {
   if (apiClient.useMocks) return apiClient.mock({ ok: true }, 300);
   return apiClient.del(`/api/admin/events/${id}`);
+}
+
+export function getEventDetail(id) {
+  if (apiClient.useMocks) return apiClient.mock(adminEventDetail);
+  return apiClient.get(`/api/admin/events/${id}`);
+}
+
+// payload: { itemKey, isDone }
+export function updateEventChecklist(id, payload) {
+  if (apiClient.useMocks) return apiClient.mock({ ok: true, ...payload }, 300);
+  return apiClient.patch(`/api/admin/events/${id}/checklist`, payload);
+}
+
+export function getBeneficiaryVisits(id) {
+  if (apiClient.useMocks) return apiClient.mock(beneficiaryVisits);
+  return apiClient.get(`/api/admin/beneficiaries/${id}/visits`);
+}
+
+// payload: { visitorName, relation, visitDate, notes }
+export function logBeneficiaryVisit(id, payload) {
+  if (apiClient.useMocks) return apiClient.mock({ id: `visit-${Date.now()}`, ...payload }, 400);
+  return apiClient.post(`/api/admin/beneficiaries/${id}/visits`, payload);
+}
+
+export function deleteBeneficiaryVisit(id, visitId) {
+  if (apiClient.useMocks) return apiClient.mock({ ok: true }, 300);
+  return apiClient.del(`/api/admin/beneficiaries/${id}/visits/${visitId}`);
 }
 
 export function getVolunteers() {

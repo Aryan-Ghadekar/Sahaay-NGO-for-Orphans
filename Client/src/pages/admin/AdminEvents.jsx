@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import { Loader } from '../../components/common/AsyncState';
 import { useFetch } from '../../hooks/useFetch';
@@ -10,6 +11,7 @@ import './AdminEvents.css';
 const EMPTY = {
   title: '', description: '', programId: '', status: 'upcoming', eventDate: '',
   location: '', volunteersNeeded: 0, expectedImpact: '', imageDataUrl: '', minHoursRequired: 0,
+  budgetAmount: 0,
 };
 
 function toFormState(row) {
@@ -24,6 +26,7 @@ function toFormState(row) {
     expectedImpact: row.expectedImpact || '',
     imageDataUrl: row.image || '',
     minHoursRequired: row.minHoursRequired || 0,
+    budgetAmount: row.budgetAmount || 0,
   };
 }
 
@@ -61,6 +64,9 @@ function EventFields({ form, set, programs, onImage }) {
         </div>
         <div className="field"><label>Minimum hours for certificate</label>
           <input className="input" type="number" min="0" step="0.5" value={form.minHoursRequired} onChange={set('minHoursRequired')} />
+        </div>
+        <div className="field"><label>Budget (₹)</label>
+          <input className="input" type="number" min="0" step="0.01" value={form.budgetAmount} onChange={set('budgetAmount')} />
         </div>
       </div>
       <div className="field"><label>Description</label>
@@ -128,6 +134,7 @@ function EventRow({ row, programs, onChanged }) {
         <td>{row.location}</td>
         <td>{row.volunteersNeeded}</td>
         <td style={{ display: 'flex', gap: 8 }}>
+          <Link className="btn btn-secondary btn-sm" to={`/admin/events/${row.id}`}>Details</Link>
           <button className="btn btn-secondary btn-sm" onClick={() => (expanded ? setExpanded(false) : openEdit())}>
             {expanded ? 'Hide' : 'Edit'}
           </button>

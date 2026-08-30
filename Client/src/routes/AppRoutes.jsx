@@ -16,11 +16,12 @@ import StaffOrphans from '../pages/staff/StaffOrphans';
 import StaffEvents from '../pages/staff/StaffEvents';
 import StaffPrograms from '../pages/staff/StaffPrograms';
 import StaffAssignments from '../pages/staff/StaffAssignments';
-import StaffAttendance from '../pages/staff/StaffAttendance';
+import StaffEventDetail from '../pages/staff/StaffEventDetail';
 import StaffStatistics from '../pages/staff/StaffStatistics';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminPrograms from '../pages/admin/AdminPrograms';
 import AdminEvents from '../pages/admin/AdminEvents';
+import AdminEventDetail from '../pages/admin/AdminEventDetail';
 import AdminVolunteers from '../pages/admin/AdminVolunteers';
 import AdminOrphans from '../pages/admin/AdminOrphans';
 import AdminDonors from '../pages/admin/AdminDonors';
@@ -53,15 +54,16 @@ export default function AppRoutes() {
       <Route path="/staff/volunteers" element={Staff(<StaffVolunteers />)} />
       <Route path="/staff/orphans" element={Staff(<StaffOrphans />)} />
       <Route path="/staff/events" element={Staff(<StaffEvents />)} />
+      <Route path="/staff/events/:id" element={Staff(<StaffEventDetail />)} />
       <Route path="/staff/programs" element={Staff(<StaffPrograms />)} />
       <Route path="/staff/assignments" element={Staff(<StaffAssignments />)} />
-      <Route path="/staff/attendance" element={Staff(<StaffAttendance />)} />
       <Route path="/staff/statistics" element={Staff(<StaffStatistics />)} />
 
       <Route path="/admin" element={Admin(<AdminDashboard />)} />
       <Route path="/admin/website" element={Admin(<AdminContent />)} />
       <Route path="/admin/programs" element={Admin(<AdminPrograms />)} />
       <Route path="/admin/events" element={Admin(<AdminEvents />)} />
+      <Route path="/admin/events/:id" element={Admin(<AdminEventDetail />)} />
       <Route path="/admin/donors" element={Admin(<AdminDonors />)} />
       <Route path="/admin/volunteers" element={Admin(<AdminVolunteers />)} />
       <Route path="/admin/orphans" element={Admin(<AdminOrphans />)} />

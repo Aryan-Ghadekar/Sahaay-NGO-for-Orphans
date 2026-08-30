@@ -1,0 +1,17 @@
+.visit-log-panel {
+  padding: 18px 4px;
+  border-top: 1px solid var(--color-neutral-200);
+  border-bottom: 1px solid var(--color-neutral-200);
+  background: var(--color-neutral-100);
+}
+
+.visit-log-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 640px) {
+  .visit-log-grid { grid-template-columns: 1fr; }
+}

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import SimpleTable from '../../components/common/SimpleTable';
 import { Loader } from '../../components/common/AsyncState';
@@ -11,6 +12,7 @@ const COLUMNS = [
   { key: 'status', label: 'Status', render: (r) => <span className={`tag ${r.status === 'Ongoing' ? 'tag-sage' : r.status === 'Completed' ? 'tag-neutral' : 'tag-outline'}`}>{r.status}</span> },
   { key: 'date', label: 'Date' },
   { key: 'location', label: 'Location' },
+  { key: 'view', label: '', render: (r) => <Link to={`/staff/events/${r.id}`}>View →</Link> },
 ];
 
 export default function StaffEvents() {

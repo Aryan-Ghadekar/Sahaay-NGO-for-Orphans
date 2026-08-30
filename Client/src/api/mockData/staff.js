@@ -43,6 +43,30 @@ export const allAssignments = [
   { id: 'app-1082', event: 'Health Camp for Children', name: 'Karan Mehta', match: '91%', skills: 'Teaching', availability: 'Weekdays', date: 'Aug 15, 2026' },
 ];
 
+export const eventDetail = {
+  id: 'ev-1', title: 'Education Support Program', program: 'Education Support',
+  status: 'Ongoing', statusRaw: 'ongoing', eventDate: 'August 2026', location: 'Pune Center',
+  budgetAmount: 50000, budgetAmountDisplay: '₹50,000',
+  fundsRaised: 32000, fundsRaisedDisplay: '₹32,000',
+  fundsUsed: 18000, fundsUsedDisplay: '₹18,000',
+  progressPct: 60,
+  checklist: [
+    { key: 'venue_confirmed', label: 'Venue confirmed', isDone: true, auto: false },
+    { key: 'budget_approved', label: 'Budget approved', isDone: true, auto: false },
+    { key: 'materials_arranged', label: 'Materials / supplies arranged', isDone: false, auto: false },
+    { key: 'invitations_sent', label: 'Invitations / announcements sent', isDone: false, auto: false },
+    { key: 'volunteers_assigned', label: 'Volunteers assigned', isDone: true, auto: true, approvedCount: 6, neededCount: 6 },
+  ],
+  approvedVolunteers: [
+    { id: 'vol-1', name: 'Ananya Rao', skills: 'Teaching, Math', availability: 'Weekdays' },
+    { id: 'vol-2', name: 'Karan Mehta', skills: 'Teaching', availability: 'Weekdays' },
+  ],
+};
+
+export const orphanVisits = [
+  { id: 'visit-1', visitorName: 'Sunita Sharma', relation: 'Aunt', visitDate: '2026-08-10', notes: 'Brought clothes and books.' },
+];
+
 export const attendanceQueue = {
   pending: [
     { applicationId: 'app-2001', volunteerId: 'vol-1', eventId: 'ev-1', volunteer: 'Ananya Rao', event: 'Education Support Program', date: 'August 2026', checkedInAt: null },

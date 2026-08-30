@@ -37,9 +37,9 @@ export const adminPrograms = [
 ];
 
 export const adminEvents = [
-  { id: 'ev-1', title: 'Education Support Program', description: 'Weekly tutoring sessions.', programId: 'prog-1', program: 'Education Support', statusRaw: 'ongoing', status: 'Ongoing', eventDate: '2026-08-05', date: 'August 2026', location: 'Pune Center', volunteersNeeded: 6, expectedImpact: '40 students tutored', image: null, minHoursRequired: 3 },
-  { id: 'ev-2', title: 'Digital Literacy Drive', description: 'Computer basics workshop.', programId: 'prog-3', program: 'Digital Literacy', statusRaw: 'ongoing', status: 'Ongoing', eventDate: '2026-08-12', date: 'August 2026', location: 'Nashik Center', volunteersNeeded: 4, expectedImpact: '25 teenagers trained', image: null, minHoursRequired: 4 },
-  { id: 'ev-3', title: 'Health Camp for Children', description: 'Free pediatric check-ups.', programId: 'prog-2', program: 'Healthcare Program', statusRaw: 'upcoming', status: 'Upcoming', eventDate: '2026-09-10', date: 'September 2026', location: 'Mumbai Center', volunteersNeeded: 8, expectedImpact: '60 check-ups', image: null, minHoursRequired: 0 },
+  { id: 'ev-1', title: 'Education Support Program', description: 'Weekly tutoring sessions.', programId: 'prog-1', program: 'Education Support', statusRaw: 'ongoing', status: 'Ongoing', eventDate: '2026-08-05', date: 'August 2026', location: 'Pune Center', volunteersNeeded: 6, expectedImpact: '40 students tutored', image: null, minHoursRequired: 3, budgetAmount: 50000 },
+  { id: 'ev-2', title: 'Digital Literacy Drive', description: 'Computer basics workshop.', programId: 'prog-3', program: 'Digital Literacy', statusRaw: 'ongoing', status: 'Ongoing', eventDate: '2026-08-12', date: 'August 2026', location: 'Nashik Center', volunteersNeeded: 4, expectedImpact: '25 teenagers trained', image: null, minHoursRequired: 4, budgetAmount: 20000 },
+  { id: 'ev-3', title: 'Health Camp for Children', description: 'Free pediatric check-ups.', programId: 'prog-2', program: 'Healthcare Program', statusRaw: 'upcoming', status: 'Upcoming', eventDate: '2026-09-10', date: 'September 2026', location: 'Mumbai Center', volunteersNeeded: 8, expectedImpact: '60 check-ups', image: null, minHoursRequired: 0, budgetAmount: 0 },
 ];
 
 export const adminVolunteers = [
@@ -69,4 +69,27 @@ export const unallocatedFunds = [
 export const impactRecordDrafts = [
   { donationId: 'demo-donation-1', donor: 'Aryan Ghadekar', donation: '₹5,000', program: 'Education Support', activity: 'School Kit Distribution', outcome: '', impact: '' },
   { donationId: 'demo-donation-2', donor: 'Priya Sharma', donation: '₹50,000', program: 'Healthcare Program', activity: '', outcome: '', impact: '' },
+];
+
+export const adminEventDetail = {
+  id: 'ev-1', title: 'Education Support Program', program: 'Education Support',
+  status: 'Ongoing', statusRaw: 'ongoing', eventDate: 'August 2026', location: 'Pune Center',
+  budgetAmount: 50000, budgetAmountDisplay: '₹50,000',
+  fundsRaised: 32000, fundsRaisedDisplay: '₹32,000',
+  fundsUsed: 18000, fundsUsedDisplay: '₹18,000',
+  progressPct: 60,
+  checklist: [
+    { key: 'venue_confirmed', label: 'Venue confirmed', isDone: true, auto: false },
+    { key: 'budget_approved', label: 'Budget approved', isDone: true, auto: false },
+    { key: 'materials_arranged', label: 'Materials / supplies arranged', isDone: false, auto: false },
+    { key: 'invitations_sent', label: 'Invitations / announcements sent', isDone: false, auto: false },
+    { key: 'volunteers_assigned', label: 'Volunteers assigned', isDone: true, auto: true, approvedCount: 6, neededCount: 6 },
+  ],
+  approvedVolunteers: [
+    { id: 'vol-1', name: 'Ananya Rao', skills: 'Teaching, Math', availability: 'Weekdays' },
+  ],
+};
+
+export const beneficiaryVisits = [
+  { id: 'visit-1', visitorName: 'Sunita Sharma', relation: 'Aunt', visitDate: '2026-08-10', notes: 'Brought clothes and books.' },
 ];

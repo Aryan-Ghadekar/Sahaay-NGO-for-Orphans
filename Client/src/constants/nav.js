@@ -28,6 +28,5 @@ export const STAFF_NAV = [
   { to: '/staff/events', label: 'Events' },
   { to: '/staff/programs', label: 'Programs' },
   { to: '/staff/assignments', label: 'Assignments' },
-  { to: '/staff/attendance', label: 'Attendance' },
   { to: '/staff/statistics', label: 'Statistics' },
 ];
