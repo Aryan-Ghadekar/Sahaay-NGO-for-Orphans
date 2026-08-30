@@ -69,3 +69,11 @@ export function issueCertificate(payload) {
   if (apiClient.useMocks) return apiClient.mock({ ok: true, ...payload }, 400);
   return apiClient.post('/api/staff/certificates', payload);
 }
+
+// applicationId is decoded client-side from the scanned QR. The server
+// re-derives everything else (status, event date, check-in/out state) —
+// this is just "here's the code that was scanned."
+export function scanQrCode(applicationId) {
+  if (apiClient.useMocks) return apiClient.mock({ action: 'checked_in', volunteer: 'Demo Volunteer', checkedInAt: new Date().toISOString() }, 400);
+  return apiClient.post('/api/staff/scan', { applicationId });
+}

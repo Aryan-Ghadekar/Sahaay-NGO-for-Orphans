@@ -33,8 +33,11 @@ choice; see the note at the bottom of this section):
    volunteers; adds `min_hours_required` to events; adds the `certificates`
    table and redefines `volunteer_stats` (attendance % is replaced by a
    certificates-earned count)
+10. `supabase/010_qr_checkin.sql` — adds `checked_in_at`/`checked_out_at`
+    columns to `attendance`, for QR-based check-in/check-out (see "Email
+    and QR check-in" below)
 
-All nine are safe to re-run if you need to.
+All ten are safe to re-run if you need to.
 
 > Supabase's SQL editor flags `schema.sql` for creating tables without RLS
 > enabled and offers "Run and enable RLS" — take that option. It costs
@@ -119,7 +122,11 @@ Every route below (except `/api/auth/*` and `/api/public/*`) requires
 | `POST /api/volunteer/applications` | volunteer | apply to an event |
 | `GET /api/staff/overview` | staff, admin | org stat row |
 | `GET /api/staff/assignments/queue` | staff, admin | pending applicants for an event |
-| `POST /api/staff/assignments` | staff, admin | approve an application |
+| `POST /api/staff/assignments` | staff, admin | approve an application (also fires the approval QR email) |
+| `GET /api/staff/attendance` | staff, admin | hours-awaiting/recorded queue |
+| `POST /api/staff/attendance` | staff, admin | manually set a volunteer's hours (override) |
+| `POST /api/staff/scan` | staff, admin | scan a volunteer's QR — check-in on first scan, check-out on second |
+| `POST /api/staff/certificates` | staff, admin | issue a certificate once hours meet the event's minimum |
 | `GET /api/staff/orphans` | staff, admin | beneficiaries, operational view (no PII) |
 | `GET /api/admin/overview` | admin | 9-tile org overview |
 | `GET /api/admin/content-blocks` | admin | static stub — no CMS table exists yet |
@@ -140,10 +147,25 @@ Every route below (except `/api/auth/*` and `/api/public/*`) requires
   mission statement, etc. isn't backed by any of the 8 core tables — it
   would need its own `content_blocks` (or full CMS) table. Left as a
   static list so the panel still renders.
-- **Matching is a heuristic**, not a real scoring model — see
-  `src/utils/matching.js`. It scores a volunteer against an event by
-  keyword overlap between their skills and the event's title/description.
-  Swap the implementation there; every caller goes through `scoreMatch()`.
+- **Matching combines three real signals** — see `src/utils/matching.js`.
+  Skills (keyword overlap against the event's title/description/program
+  category), availability (the event date's weekday/weekend vs. the
+  volunteer's preference), and location (string match). Any factor with no
+  usable data on either side is excluded from the average rather than
+  scored as 0. Every caller goes through `scoreMatch()`.
+- **Email and QR check-in**: approving a volunteer's application
+  (`POST /api/staff/assignments`) emails them a QR code encoding their
+  `applications.id` — no separate token table. NGO staff scan it with
+  `POST /api/staff/scan`: first scan checks in, second checks out, and
+  hours are computed from the timestamp diff (`attendance.checked_in_at`/
+  `checked_out_at`). Staff can still set hours by hand via
+  `POST /api/staff/attendance` as a fallback; doing so resets any
+  in-progress check-in so a later stray scan can't overwrite a manual
+  correction with stale timestamps. Email sending needs `SMTP_HOST` (and
+  friends) set in `.env` — see `.env.example`; with it unset, `assign()`
+  still works normally and just logs a warning instead of sending.
+  Check-in/check-out is only accepted on the event's actual calendar day
+  (`Asia/Kolkata`).
 - **"Students Impacted"** (admin overview) is defined as beneficiaries in a
   program that has at least one donation already marked `used` — i.e.
   funding actually put to work, not just pledged. See the comment on

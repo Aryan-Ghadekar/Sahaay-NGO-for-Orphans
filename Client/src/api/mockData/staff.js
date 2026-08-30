@@ -45,7 +45,8 @@ export const allAssignments = [
 
 export const attendanceQueue = {
   pending: [
-    { applicationId: 'app-2001', volunteerId: 'vol-1', eventId: 'ev-1', volunteer: 'Ananya Rao', event: 'Education Support Program', date: 'August 2026' },
+    { applicationId: 'app-2001', volunteerId: 'vol-1', eventId: 'ev-1', volunteer: 'Ananya Rao', event: 'Education Support Program', date: 'August 2026', checkedInAt: null },
+    { applicationId: 'app-2002', volunteerId: 'vol-2', eventId: 'ev-2', volunteer: 'Karan Mehta', event: 'Health Camp for Children', date: 'September 2026', checkedInAt: new Date().toISOString() },
   ],
   recorded: [
     { id: 'att-1', volunteerId: 'vol-2', eventId: 'ev-3', volunteer: 'Karan Mehta', event: 'Digital Literacy Drive', hours: 4, minHoursRequired: 3, eligible: true, certificateIssued: false, date: 'July 2026' },

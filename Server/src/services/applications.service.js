@@ -56,14 +56,33 @@ export async function listAllPendingApplications() {
 }
 
 // Approved applications not yet marked in `attendance` — what Staff's
-// Attendance page offers to record.
+// Attendance page offers to record. A mid-checkin row (checked in via QR,
+// not checked out yet) stays "pending" too, rather than vanishing here and
+// showing up as a bare 0-hour row in the recorded list — see
+// listRecordedAttendance's matching filter below.
 export async function listApprovedAwaitingAttendance() {
   const { data, error } = await supabaseAdmin
     .from('applications')
-    .select('id, events(id, title, event_date), volunteers(id, profiles(full_name)), attendance(id)')
+    .select('id, events(id, title, event_date), volunteers(id, profiles(full_name)), attendance(id, checked_in_at, checked_out_at)')
     .eq('status', 'approved');
   if (error) throw error;
-  return (data || []).filter((r) => !r.attendance || r.attendance.length === 0);
+  return (data || []).filter((r) => {
+    const a = r.attendance?.[0];
+    return !a || (a.checked_in_at && !a.checked_out_at);
+  });
+}
+
+// Full detail for a single application — used both by the QR scan
+// endpoint (to validate status/event date and identify the volunteer) and
+// the post-approval email step (to get the volunteer's contact info).
+export async function getApplicationForScan(applicationId) {
+  const { data, error } = await supabaseAdmin
+    .from('applications')
+    .select('id, status, volunteer_id, event_id, volunteers(id, profiles(full_name, email)), events(id, title, event_date)')
+    .eq('id', applicationId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
 }
 
 export async function countPending() {

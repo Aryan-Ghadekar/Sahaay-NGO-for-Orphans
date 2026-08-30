@@ -20,4 +20,14 @@ export const env = {
   // Optional — the AI impact-narrative endpoint checks this itself and
   // returns a clear error rather than failing at startup when it's unset.
   geminiApiKey: process.env.GEMINI_API_KEY || '',
+  // Optional — email.service.js checks smtp.host itself and skips sending
+  // (logging a warning) rather than failing at startup or breaking the
+  // approval flow when it's unset.
+  smtp: {
+    host: process.env.SMTP_HOST || '',
+    port: Number(process.env.SMTP_PORT) || 587,
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+    from: process.env.SMTP_FROM || 'Sahaay <no-reply@sahaay.org>',
+  },
 };
