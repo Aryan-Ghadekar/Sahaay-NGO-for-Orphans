@@ -7,6 +7,9 @@ import * as beneficiariesService from '../services/beneficiaries.service.js';
 import * as profilesService from '../services/profiles.service.js';
 import * as geminiService from '../services/gemini.service.js';
 import * as siteContentService from '../services/siteContent.service.js';
+import * as applicationsService from '../services/applications.service.js';
+import * as eventChecklistService from '../services/eventChecklist.service.js';
+import * as visitsService from '../services/visits.service.js';
 import { formatRupeesShort, formatRupees, formatMonthYear, formatEventStatus, formatProgress } from '../utils/format.js';
 import { isValidName, isValidPhone } from '../utils/validators.js';
 
@@ -224,28 +227,97 @@ export async function getEvents(req, res) {
       expectedImpact: r.expected_impact || '',
       image: r.image_data_url || null,
       minHoursRequired: Number(r.min_hours_required) || 0,
+      budgetAmount: Number(r.budget_amount) || 0,
     }))
   );
 }
 
 export async function createEvent(req, res) {
-  const { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired } = req.body;
+  const { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired, budgetAmount } = req.body;
   if (!title) return res.status(400).json({ error: 'title is required' });
   if (imageDataUrl && !/^data:image\//i.test(imageDataUrl)) {
     return res.status(400).json({ error: 'imageDataUrl must be a data:image/ URL' });
   }
-  const event = await eventsService.createEvent({ title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired });
+  const event = await eventsService.createEvent({ title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired, budgetAmount });
+  await eventChecklistService.seedChecklist(event.id);
   res.status(201).json(event);
 }
 
 export async function updateEvent(req, res) {
-  const { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired } = req.body;
+  const { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired, budgetAmount } = req.body;
   if (!title) return res.status(400).json({ error: 'title is required' });
   if (imageDataUrl && !/^data:image\//i.test(imageDataUrl)) {
     return res.status(400).json({ error: 'imageDataUrl must be a data:image/ URL' });
   }
-  const event = await eventsService.updateEvent(req.params.id, { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired });
+  const event = await eventsService.updateEvent(req.params.id, { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired, budgetAmount });
   res.json(event);
+}
+
+// Same shape as staff.controller.js's getEventDetail/updateChecklistItem —
+// this app duplicates a thin controller per role over shared services
+// rather than one role's frontend calling the other's route (see
+// getEvents above, already split the same way).
+export async function getEventDetail(req, res) {
+  const { id } = req.params;
+  const [event, funds, approved, checklist] = await Promise.all([
+    eventsService.getEventById(id),
+    donationsService.getEventFundsSummary(id),
+    applicationsService.listApprovedVolunteersForEvent(id),
+    eventChecklistService.listChecklistItems(id),
+  ]);
+  if (!event) return res.status(404).json({ error: 'Event not found' });
+
+  const manualItems = eventChecklistService.CHECKLIST_ITEMS.map((def) => {
+    const row = checklist.find((c) => c.item_key === def.key);
+    return { key: def.key, label: def.label, isDone: !!row?.is_done, completedAt: row?.completed_at || null, auto: false };
+  });
+  const neededCount = event.volunteers_needed || 0;
+  const approvedCount = approved.length;
+  const items = [
+    ...manualItems,
+    {
+      key: 'volunteers_assigned',
+      label: 'Volunteers assigned',
+      isDone: neededCount > 0 && approvedCount >= neededCount,
+      auto: true,
+      approvedCount,
+      neededCount,
+    },
+  ];
+  const doneCount = items.filter((i) => i.isDone).length;
+
+  res.json({
+    id: event.id,
+    title: event.title,
+    description: event.description || '',
+    status: formatEventStatus(event.status),
+    statusRaw: event.status,
+    eventDate: event.event_date ? formatMonthYear(event.event_date) : '—',
+    location: event.location || '—',
+    program: event.programs?.name || '—',
+    budgetAmount: Number(event.budget_amount) || 0,
+    budgetAmountDisplay: formatRupees(event.budget_amount || 0),
+    fundsRaised: funds.raised,
+    fundsRaisedDisplay: formatRupees(funds.raised),
+    fundsUsed: funds.used,
+    fundsUsedDisplay: formatRupees(funds.used),
+    checklist: items,
+    progressPct: Math.round((doneCount / items.length) * 100),
+    approvedVolunteers: approved.map((r) => ({
+      id: r.volunteers?.id,
+      name: r.volunteers?.profiles?.full_name || 'Volunteer',
+      skills: (r.volunteers?.skills || []).join(', ') || '—',
+      availability: r.volunteers?.availability || '—',
+    })),
+  });
+}
+
+export async function updateChecklistItem(req, res) {
+  const { itemKey, isDone } = req.body;
+  const valid = eventChecklistService.CHECKLIST_ITEMS.some((i) => i.key === itemKey);
+  if (!valid) return res.status(400).json({ error: 'Invalid checklist item' });
+  const row = await eventChecklistService.setChecklistItem(req.params.id, itemKey, !!isDone, req.user.id);
+  res.json(row);
 }
 
 export async function deleteEvent(req, res) {
@@ -363,6 +435,29 @@ export async function updateBeneficiary(req, res) {
 
 export async function deleteBeneficiary(req, res) {
   await beneficiariesService.deleteBeneficiary(req.params.id);
+  res.status(204).end();
+}
+
+// ---------- Beneficiary visitor log ----------
+// Admin already has the real beneficiary UUID (req.params.id) directly, no
+// child_code resolution needed like staff.controller.js's visit endpoints.
+export async function getBeneficiaryVisits(req, res) {
+  const rows = await visitsService.listVisitsForBeneficiary(req.params.id);
+  res.json(rows.map((r) => ({ id: r.id, visitorName: r.visitor_name, relation: r.relation, visitDate: r.visit_date, notes: r.notes || '' })));
+}
+
+export async function logBeneficiaryVisit(req, res) {
+  const { visitorName, relation, visitDate, notes } = req.body;
+  if (!visitorName || !relation || !visitDate) {
+    return res.status(400).json({ error: 'visitorName, relation, and visitDate are required' });
+  }
+  const visit = await visitsService.createVisit(req.params.id, { visitorName, relation, visitDate, notes }, req.user.id);
+  res.status(201).json({ id: visit.id, visitorName, relation, visitDate, notes: notes || '' });
+}
+
+// Admin-only — staff has no equivalent delete route.
+export async function deleteBeneficiaryVisit(req, res) {
+  await visitsService.deleteVisit(req.params.visitId);
   res.status(204).end();
 }
 

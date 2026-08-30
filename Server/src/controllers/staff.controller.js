@@ -7,8 +7,11 @@ import * as volunteersService from '../services/volunteers.service.js';
 import * as attendanceService from '../services/attendance.service.js';
 import * as certificatesService from '../services/certificates.service.js';
 import * as emailService from '../services/email.service.js';
+import * as eventChecklistService from '../services/eventChecklist.service.js';
+import * as donationsService from '../services/donations.service.js';
+import * as visitsService from '../services/visits.service.js';
 import QRCode from 'qrcode';
-import { formatProgress, formatEventStatus, formatMonthYear, formatDayMonthYear } from '../utils/format.js';
+import { formatProgress, formatEventStatus, formatMonthYear, formatDayMonthYear, formatRupees } from '../utils/format.js';
 
 export async function getOverview(req, res) {
   const [activeVolunteers, totalChildren, ongoingPrograms, upcomingEvents, pendingApplications] = await Promise.all([
@@ -131,6 +134,97 @@ export async function getEvents(req, res) {
       volunteersNeeded: r.volunteers_needed,
     }))
   );
+}
+
+// Full event-readiness picture: budget/funds, the 4 manual checklist items
+// plus a 5th computed one (approved volunteers vs. volunteers_needed —
+// never stored, so it can't drift stale), and who's actually assigned.
+// Mirrored in admin.controller.js against the same shared services — this
+// app never has one role's frontend call the other role's route (see
+// getEvents above, already duplicated the same way).
+export async function getEventDetail(req, res) {
+  const { id } = req.params;
+  const [event, funds, approved, checklist] = await Promise.all([
+    eventsService.getEventById(id),
+    donationsService.getEventFundsSummary(id),
+    applicationsService.listApprovedVolunteersForEvent(id),
+    eventChecklistService.listChecklistItems(id),
+  ]);
+  if (!event) return res.status(404).json({ error: 'Event not found' });
+
+  const manualItems = eventChecklistService.CHECKLIST_ITEMS.map((def) => {
+    const row = checklist.find((c) => c.item_key === def.key);
+    return { key: def.key, label: def.label, isDone: !!row?.is_done, completedAt: row?.completed_at || null, auto: false };
+  });
+  const neededCount = event.volunteers_needed || 0;
+  const approvedCount = approved.length;
+  const items = [
+    ...manualItems,
+    {
+      key: 'volunteers_assigned',
+      label: 'Volunteers assigned',
+      isDone: neededCount > 0 && approvedCount >= neededCount,
+      auto: true,
+      approvedCount,
+      neededCount,
+    },
+  ];
+  const doneCount = items.filter((i) => i.isDone).length;
+
+  res.json({
+    id: event.id,
+    title: event.title,
+    description: event.description || '',
+    status: formatEventStatus(event.status),
+    statusRaw: event.status,
+    eventDate: event.event_date ? formatMonthYear(event.event_date) : '—',
+    location: event.location || '—',
+    program: event.programs?.name || '—',
+    budgetAmount: Number(event.budget_amount) || 0,
+    budgetAmountDisplay: formatRupees(event.budget_amount || 0),
+    fundsRaised: funds.raised,
+    fundsRaisedDisplay: formatRupees(funds.raised),
+    fundsUsed: funds.used,
+    fundsUsedDisplay: formatRupees(funds.used),
+    checklist: items,
+    progressPct: Math.round((doneCount / items.length) * 100),
+    approvedVolunteers: approved.map((r) => ({
+      id: r.volunteers?.id,
+      name: r.volunteers?.profiles?.full_name || 'Volunteer',
+      skills: (r.volunteers?.skills || []).join(', ') || '—',
+      availability: r.volunteers?.availability || '—',
+    })),
+  });
+}
+
+export async function updateChecklistItem(req, res) {
+  const { itemKey, isDone } = req.body;
+  const valid = eventChecklistService.CHECKLIST_ITEMS.some((i) => i.key === itemKey);
+  if (!valid) return res.status(400).json({ error: 'Invalid checklist item' });
+  const row = await eventChecklistService.setChecklistItem(req.params.id, itemKey, !!isDone, req.user.id);
+  res.json(row);
+}
+
+// Staff can log a visit but never delete one — the log is a permanent
+// operational record once admin sees it. Staff also never has the real
+// beneficiary UUID (see getOrphanRecords above, masked view returns
+// child_code as `id`), so every call here resolves childCode first.
+export async function getOrphanVisits(req, res) {
+  const beneficiaryId = await beneficiariesService.getIdByChildCode(req.params.childCode);
+  if (!beneficiaryId) return res.status(404).json({ error: 'Child ID not found' });
+  const rows = await visitsService.listVisitsForBeneficiary(beneficiaryId);
+  res.json(rows.map((r) => ({ id: r.id, visitorName: r.visitor_name, relation: r.relation, visitDate: r.visit_date, notes: r.notes || '' })));
+}
+
+export async function logOrphanVisit(req, res) {
+  const { visitorName, relation, visitDate, notes } = req.body;
+  if (!visitorName || !relation || !visitDate) {
+    return res.status(400).json({ error: 'visitorName, relation, and visitDate are required' });
+  }
+  const beneficiaryId = await beneficiariesService.getIdByChildCode(req.params.childCode);
+  if (!beneficiaryId) return res.status(404).json({ error: 'Child ID not found' });
+  const visit = await visitsService.createVisit(beneficiaryId, { visitorName, relation, visitDate, notes }, req.user.id);
+  res.status(201).json({ id: visit.id, visitorName, relation, visitDate, notes: notes || '' });
 }
 
 // The full Assignments page — pending applicants across every event, not

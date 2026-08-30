@@ -131,6 +131,20 @@ export async function countBeneficiaries() {
   return count || 0;
 }
 
+// Resolves the masked identifier staff work with (child_code) to the real
+// row id — staff never receives the real id directly (see
+// listBeneficiariesOperational), so any staff-facing feature keyed on a
+// specific child (like the visitor log) needs this lookup first.
+export async function getIdByChildCode(childCode) {
+  const { data, error } = await supabaseAdmin
+    .from('beneficiaries')
+    .select('id')
+    .eq('child_code', childCode)
+    .maybeSingle();
+  if (error) throw error;
+  return data?.id || null;
+}
+
 // Grounding numbers for the AI impact-story generator — how many children a
 // program actually supports and how engaged they are, so the drafted
 // outcome stays proportionate to reality instead of inventing a scale.

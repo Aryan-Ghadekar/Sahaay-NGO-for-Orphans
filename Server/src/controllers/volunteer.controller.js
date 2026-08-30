@@ -162,6 +162,7 @@ export async function apply(req, res) {
     volunteersService.getVolunteerWithProfile(req.user.id),
     eventsService.getEventById(eventId),
   ]);
+  if (!event) return res.status(404).json({ error: 'Event not found' });
   const score = scoreMatch(volunteer, event);
   const application = await applicationsService.createApplication(req.user.id, eventId, score);
   res.status(201).json(application);

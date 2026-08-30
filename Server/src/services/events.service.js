@@ -37,7 +37,7 @@ export async function listAllEvents() {
   return data;
 }
 
-export async function createEvent({ title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired }) {
+export async function createEvent({ title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired, budgetAmount }) {
   const { data, error } = await supabaseAdmin
     .from('events')
     .insert({
@@ -51,6 +51,7 @@ export async function createEvent({ title, description, programId, status, event
       expected_impact: expectedImpact || null,
       image_data_url: imageDataUrl || null,
       min_hours_required: minHoursRequired || 0,
+      budget_amount: budgetAmount || 0,
     })
     .select()
     .single();
@@ -58,7 +59,7 @@ export async function createEvent({ title, description, programId, status, event
   return data;
 }
 
-export async function updateEvent(id, { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired }) {
+export async function updateEvent(id, { title, description, programId, status, eventDate, location, volunteersNeeded, expectedImpact, imageDataUrl, minHoursRequired, budgetAmount }) {
   const update = {
     title,
     description,
@@ -69,6 +70,7 @@ export async function updateEvent(id, { title, description, programId, status, e
     volunteers_needed: volunteersNeeded,
     expected_impact: expectedImpact || null,
     min_hours_required: minHoursRequired || 0,
+    budget_amount: budgetAmount || 0,
   };
   // Only touch the image if a fresh one was actually uploaded — an omitted
   // field means "leave the existing image alone", not "clear it".
@@ -96,8 +98,11 @@ export async function deleteEvent(id) {
 export async function getEventById(id) {
   // The category join keeps scoreMatch's skill corpus (title+description+
   // category) consistent between what a volunteer saw before applying and
-  // what apply() persists to applications.match_score.
-  const { data, error } = await supabaseAdmin.from('events').select('*, programs(category)').eq('id', id).single();
+  // what apply() persists to applications.match_score. `name` is included
+  // too for the event detail dashboard. maybeSingle (not single) so a bad
+  // id returns null for callers to 404 on, rather than throwing — matches
+  // staff.controller.js's issueCertificate, which already null-checks this.
+  const { data, error } = await supabaseAdmin.from('events').select('*, programs(name, category)').eq('id', id).maybeSingle();
   if (error) throw error;
   return data;
 }

@@ -172,3 +172,20 @@ export async function annotateDonation(donationId, { outcome, impactNote, status
   if (error) throw error;
   return data;
 }
+
+// Per-event funds picture for the event detail dashboard. Sums every
+// donation regardless of `verified` — matching org_overview's own
+// total_donations definition (schema.sql), so an event's "raised" figure
+// stays consistent with the org-wide total an admin already sees.
+export async function getEventFundsSummary(eventId) {
+  const { data, error } = await supabaseAdmin
+    .from('donations')
+    .select('amount, status')
+    .eq('event_id', eventId);
+  if (error) throw error;
+  const rows = data || [];
+  return {
+    raised: rows.reduce((sum, r) => sum + Number(r.amount), 0),
+    used: rows.filter((r) => r.status === 'used').reduce((sum, r) => sum + Number(r.amount), 0),
+  };
+}

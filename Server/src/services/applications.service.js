@@ -85,6 +85,21 @@ export async function getApplicationForScan(applicationId) {
   return data;
 }
 
+// Everyone actually assigned to this event — status='approved', unlike
+// listAssignmentQueue's 'under_review'. Backs the event detail dashboard's
+// assigned-volunteers list and the checklist's computed "Volunteers
+// assigned" item (approved.length vs. events.volunteers_needed).
+export async function listApprovedVolunteersForEvent(eventId) {
+  const { data, error } = await supabaseAdmin
+    .from('applications')
+    .select('id, volunteers(id, skills, availability, profiles(full_name))')
+    .eq('event_id', eventId)
+    .eq('status', 'approved')
+    .order('decided_at', { ascending: true });
+  if (error) throw error;
+  return data;
+}
+
 export async function countPending() {
   const { count, error } = await supabaseAdmin
     .from('applications')
