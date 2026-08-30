@@ -36,8 +36,13 @@ choice; see the note at the bottom of this section):
 10. `supabase/010_qr_checkin.sql` — adds `checked_in_at`/`checked_out_at`
     columns to `attendance`, for QR-based check-in/check-out (see "Email
     and QR check-in" below)
+11. `supabase/011_event_budget_and_checklist.sql` — adds `budget_amount` to
+    events and the `event_checklist_items` table (a fixed 4-item readiness
+    checklist per event, backfilled for pre-existing events)
+12. `supabase/012_beneficiary_visits.sql` — adds the `beneficiary_visits`
+    table (who visited a child, when, and their relation)
 
-All ten are safe to re-run if you need to.
+All twelve are safe to re-run if you need to.
 
 > Supabase's SQL editor flags `schema.sql` for creating tables without RLS
 > enabled and offers "Run and enable RLS" — take that option. It costs
@@ -127,13 +132,21 @@ Every route below (except `/api/auth/*` and `/api/public/*`) requires
 | `POST /api/staff/attendance` | staff, admin | manually set a volunteer's hours (override) |
 | `POST /api/staff/scan` | staff, admin | scan a volunteer's QR — check-in on first scan, check-out on second |
 | `POST /api/staff/certificates` | staff, admin | issue a certificate once hours meet the event's minimum |
+| `GET /api/staff/events/:id` | staff, admin | event detail — budget/funds, checklist, assigned volunteers |
+| `PATCH /api/staff/events/:id/checklist` | staff, admin | toggle one manual checklist item |
 | `GET /api/staff/orphans` | staff, admin | beneficiaries, operational view (no PII) |
+| `GET /api/staff/orphans/:childCode/visits` | staff, admin | visitor log for a child, by Child ID (add-only, no delete) |
+| `POST /api/staff/orphans/:childCode/visits` | staff, admin | log a visit against a Child ID |
 | `GET /api/admin/overview` | admin | 9-tile org overview |
 | `GET /api/admin/content-blocks` | admin | static stub — no CMS table exists yet |
 | `GET /api/admin/impact-records/draft` | admin | oldest un-annotated donation |
 | `POST /api/admin/impact-records` | admin | attach outcome/impact to a donation |
 | `GET /api/admin/team` | admin | list staff + admin accounts |
 | `POST /api/admin/team` | admin | create a new staff or admin account |
+| `GET /api/admin/events/:id` | admin | same event detail as the staff route, admin's own namespaced copy |
+| `PATCH /api/admin/events/:id/checklist` | admin | toggle one manual checklist item |
+| `GET/POST /api/admin/beneficiaries/:id/visits` | admin | full visitor log for a beneficiary (real UUID, real name) |
+| `DELETE /api/admin/beneficiaries/:id/visits/:visitId` | admin | remove a visit entry — no staff-facing equivalent exists |
 
 ## Notes
 
@@ -170,3 +183,24 @@ Every route below (except `/api/auth/*` and `/api/public/*`) requires
   program that has at least one donation already marked `used` — i.e.
   funding actually put to work, not just pledged. See the comment on
   `org_overview` in `schema.sql` if that definition should change.
+- **Event checklist is a fixed 4-item template** (`venue_confirmed`,
+  `budget_approved`, `materials_arranged`, `invitations_sent` — see
+  `src/services/eventChecklist.service.js`), seeded automatically whenever
+  an event is created. A 5th item, "Volunteers assigned," is never
+  stored — it's computed on every read of `GET /api/{staff,admin}/events/:id`
+  by comparing approved applications to `events.volunteers_needed`, so it
+  can't drift stale the way a manually-toggled boolean could. "Funds
+  raised"/"used" sum every `donations` row for that `event_id` (matching
+  `org_overview`'s own sum-everything definition — not filtered to
+  `verified` donations only, for consistency with the org-wide total).
+- **Beneficiary visitor log** (`beneficiary_visits` table) tracks who
+  visited a child, when, and their relation. Staff can add and view
+  entries, but only by Child ID — they never receive the real beneficiary
+  UUID (see `getIdByChildCode` in `beneficiaries.service.js`), so the
+  staff-facing routes resolve it server-side. Only admin can delete an
+  entry; there's no staff-facing delete route at all.
+- **Both of the above are duplicated as thin controllers in
+  `staff.controller.js` and `admin.controller.js`**, both calling the same
+  shared services — this codebase never has one role's frontend call the
+  other role's route (see `getEvents`/`getVolunteers`/`getBeneficiaries`,
+  which already follow this same pattern).
